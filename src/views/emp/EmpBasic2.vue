@@ -50,6 +50,9 @@
                 <el-form-item label="看房时间：">
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
+                <el-form-item label="成交时间：">
+                  <span>{{ props.row.begindate }}</span>
+                </el-form-item>
 
 
               </el-form>
@@ -357,6 +360,17 @@
               <el-col :span="8">
                 <el-form-item label="备注：" prop="remarks">
                   <el-input  style="width:200px"  v-model="emp.remarks"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="成交时间：" prop="begindate">
+                  <el-date-picker
+                    v-model="emp.begindate"
+                    style="width: 200px"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
                 </el-form-item>
               </el-col>
             </el-row>

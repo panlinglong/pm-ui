@@ -50,6 +50,12 @@
                 <el-form-item label="看房时间：">
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
+                <el-form-item label="起租时间：">
+                  <span>{{ props.row.begindate }}</span>
+                </el-form-item>
+                <el-form-item label="到期时间：">
+                  <span>{{ props.row.endDate }}</span>
+                </el-form-item>
 
 
               </el-form>
@@ -360,6 +366,31 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row :gutter="20">
+            <el-col :span="8">
+              <el-form-item label="起租时间：" prop="begindate">
+                <el-date-picker
+                  v-model="chuzu.begindate"
+                  style="width: 200px"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+              <el-col :span="8">
+                <el-form-item label="到期时间：" prop="endDate">
+                  <el-date-picker
+                    v-model="chuzu.endDate"
+                    style="width: 200px"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+
+            </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
@@ -587,6 +618,7 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          endDate:"",
         },
         defaultProps: {
           children: 'children',
@@ -639,6 +671,7 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          endDate:"",
         }
       },
  doAddChuzu(){
@@ -687,9 +720,11 @@
       },
       showAddChuzuView(){
         this.title="添加房源"
+        if(this.$refs['chuzuForm']!=undefined){
+          this.$refs['chuzuForm'].resetFields()
+        }
         this.emptyChuzu();
         this.getMaxWorkID();
-        this.$refs[chuzuForm].resetFields();
         this.dialogVisible=true;
       },
       deleteChuzu(row){

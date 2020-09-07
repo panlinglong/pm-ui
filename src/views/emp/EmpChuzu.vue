@@ -53,6 +53,12 @@
                 <el-form-item label="联系方式：">
                   <span>{{ props.row.phone2 }}</span>
                 </el-form-item>
+                <el-form-item label="起租时间：">
+                  <span>{{ props.row.begindate }}</span>
+                </el-form-item>
+                <el-form-item label="到期时间：">
+                  <span>{{ props.row.endDate }}</span>
+                </el-form-item>
 
               </el-form>
             </template>
@@ -362,6 +368,31 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="起租时间：" prop="begindate">
+                  <el-date-picker
+                    v-model="chuzu.begindate"
+                    style="width: 200px"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="到期时间：" prop="endDate">
+                  <el-date-picker
+                    v-model="chuzu.endDate"
+                    style="width: 200px"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+
+            </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
@@ -588,6 +619,7 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          endDate:"",
         },
         defaultProps: {
           children: 'children',
@@ -640,6 +672,7 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          endDate:"",
         }
       },
  doAddChuzu(){
