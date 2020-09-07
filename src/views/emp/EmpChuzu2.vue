@@ -68,6 +68,10 @@
             prop="idcard">
           </el-table-column>
           <el-table-column
+            label="状态："
+            prop="xingz">
+          </el-table-column>
+          <el-table-column
             width="100">
             <template slot-scope="scope">
               <el-button
@@ -333,7 +337,20 @@
               </el-col>
 
             </el-row>
-
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="状态" prop="xingz">
+                  <el-select v-model="chuzu.xingz" placeholder="请选择"  >
+                    <el-option
+                      v-for="item in options4"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
@@ -422,6 +439,14 @@
     name: 'ChuzuBasic',
     data(){
       return{
+
+          options4: [{
+            value: '未出租',
+            label: '未出租'
+          }, {
+            value: '已出租',
+            label: '已出租'
+          }],
         options2: [{
           value: '1厅',
           label: '1厅'
@@ -551,6 +576,7 @@
           jsjt1:"",
           jsjt2:"",
           jsjt3:"",
+          xingz:"",
         },
         defaultProps: {
           children: 'children',
@@ -567,10 +593,11 @@
           phone2:[{required:true,message:'请输入联系方式',trigger:'blur'}],
           price:[{required:true,message:'请输入价格',trigger:'blur'}],
           car:[{required:true,message:'请输入车位/车库',trigger:'blur'}],
-          xuequ:[{required:true,message:'请输入学区',trigger:'blur'}],
+
           jsjt1:[{required:true,message:'请输入几室',trigger:'blur'}],
           jsjt2:[{required:true,message:'请输入几厅',trigger:'blur'}],
           jsjt3:[{required:true,message:'请输入几卫',trigger:'blur'}],
+          xingz:[{required:true,message:'请选择状态',trigger:'blur'}],
         }
 
       }
@@ -600,6 +627,7 @@
           jsjt1:"",
           jsjt2:"",
           jsjt3:"",
+          xingz:"",
         }
       },
  doAddChuzu(){
