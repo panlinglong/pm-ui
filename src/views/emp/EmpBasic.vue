@@ -74,6 +74,10 @@
             prop="xingz">
           </el-table-column>
           <el-table-column
+            label="备注："
+            prop="remarks">
+          </el-table-column>
+          <el-table-column
             width="100">
             <template slot-scope="scope">
               <el-button
@@ -331,7 +335,7 @@
                 <el-form-item label="卫：" prop="jsjt3">
                   <el-select v-model="emp.jsjt3"  placeholder="请选择">
                     <el-option
-                      v-for="item in options4"
+                      v-for="item in options3"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value">
@@ -354,6 +358,12 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :span="8">
+                <el-form-item label="备注：" prop="remarks">
+                  <el-input  style="width:200px"  v-model="emp.remarks"></el-input>
+                </el-form-item>
+              </el-col>
+
             </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
@@ -580,6 +590,7 @@
           jsjt2:"",
           jsjt3:"",
           xingz:"",
+          remarks:"",
         },
         defaultProps: {
           children: 'children',
@@ -632,6 +643,7 @@
           jsjt2:"",
           jsjt3:"",
           xingz:"",
+          remarks:"",
         }
       },
  doAddEmp(){

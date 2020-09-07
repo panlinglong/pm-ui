@@ -41,7 +41,7 @@
                 <el-form-item label="装修/毛坯：">
                   <span>{{ props.row.reno }}</span>
                 </el-form-item>
-                <el-form-item label="价格：">
+                <el-form-item label="租金：">
                   <span>{{ props.row.price }}</span>
                 </el-form-item>
                 <el-form-item label="上门/介绍：">
@@ -70,6 +70,10 @@
           <el-table-column
             label="状态："
             prop="xingz">
+          </el-table-column>
+          <el-table-column
+            label="备注："
+            prop="remarks">
           </el-table-column>
           <el-table-column
             width="100">
@@ -350,6 +354,11 @@
                   </el-select>
                 </el-form-item>
               </el-col>
+              <el-col :span="8">
+                <el-form-item label="备注：" prop="remarks">
+                  <el-input  style="width:200px"  v-model="chuzu.remarks"></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
@@ -577,6 +586,7 @@
           jsjt2:"",
           jsjt3:"",
           xingz:"",
+          remarks:"",
         },
         defaultProps: {
           children: 'children',
@@ -628,6 +638,7 @@
           jsjt2:"",
           jsjt3:"",
           xingz:"",
+          remarks:"",
         }
       },
  doAddChuzu(){
