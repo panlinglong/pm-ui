@@ -58,12 +58,7 @@
             label="面积"
             width="80">
           </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone"
-            label="电话（长号）"
-            width="120">
-          </el-table-column>
+
 
           <el-table-column
             prop="remarks"
