@@ -28,11 +28,11 @@
                   <span>{{ props.row.demand }}</span>
                 </el-form-item>
                 <el-table
-                  :data="kehus"
+                  :data="props.row.kehuAs"
                   style="width: 100%">
                   <el-table-column
                     prop="kfdate"
-                    label="日期"
+                    label="看房日期"
                     width="180">
                   </el-table-column>
                   <el-table-column
@@ -41,12 +41,13 @@
                     width="200">
                   </el-table-column>
                 </el-table>
+
+
+
                 <el-form-item label="客户跟进：">
                   <span>{{ props.row.followup }}</span>
                 </el-form-item>
-                <el-form-item label="备注：">
-                  <span>{{ props.row.remarks }}</span>
-                </el-form-item>
+
               </el-form>
             </template>
           </el-table-column>
@@ -75,20 +76,21 @@
             prop="demand">
           </el-table-column>
           <el-table-column
-            width="100">
+            width="250">
             <template slot-scope="scope">
+                <el-button type="text" @click="dialogFormVisible = true"  >新增看房记录</el-button>
+
               <el-button
                 @click.native.prevent="showKehu(scope.row,scope.$index)"
-                type="text"
-                size="small">
+                type="text">
                 编辑
               </el-button>
               <el-button
                 @click.native.prevent="deleteKehu(scope.row,scope.$index)"
-                type="text"
-                size="small">
+                type="text">
                 删除
               </el-button>
+
             </template>
           </el-table-column>
 
@@ -96,6 +98,34 @@
 
 
       </div>
+      <el-dialog title="新增看房记录" :visible.sync="dialogFormVisible">
+        <el-form :model="kehu" ref="kehuForm">
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <el-form-item label="看房日期：" prop="kfdate">
+                <el-date-picker
+                  v-model="kehu.kfdate"
+                  style="width: 200px"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="内容：" prop="kfjl">
+                <el-input  style="width:200px"  v-model="kehu.kfjl"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="doAddKfjl = false">确 定</el-button>
+        </div>
+      </el-dialog>
+
+
       <el-dialog
         :title="title"
         :visible.sync="dialogVisible"
@@ -109,16 +139,24 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="性别：" prop="gender">
-                  <el-input  style="width:200px" placeholder="请输入性别" v-model="kehu.gender"></el-input>
+                <el-form-item label="需求：" prop="demand">
+                  <el-input  style="width:150px" v-model="kehu.demand" ></el-input>
                 </el-form-item>
               </el-col>
+
               <el-col :span="7">
                 <el-form-item label="联系方式：" prop="phone">
                   <el-input  style="width:150px" placeholder="请输入联系方式" v-model="kehu.phone"></el-input>
                 </el-form-item>
               </el-col>
-
+              <el-col :span="8">
+                <el-form-item label="性别：" prop="gender">
+                  <el-radio-group v-model="kehu.gender">
+                    <el-radio label="男">男</el-radio>
+                    <el-radio label="女">女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
@@ -158,15 +196,7 @@
 
 
 
-            <el-row :gutter="20">
 
-              <el-col :span="8">
-                <el-form-item label="备注：" prop="remarks">
-                  <el-input  style="width:200px"  v-model="kehu.remarks"></el-input>
-                </el-form-item>
-              </el-col>
-
-            </el-row>
          <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
@@ -229,10 +259,12 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="doAddEmp">确 定</el-button>
+          <el-button type="primary" @click="doAddKehu">确 定</el-button>
         </span>
       </el-dialog>
     </div>
+
+
 </template>
 
 <style>
@@ -260,6 +292,8 @@
         allDeps:[],
         visible:false,
         dialogVisible:false,
+        dialogFormVisible: false,
+        formLabelWidth: '120px',
         kehus:[{
         }],
         keyword:'',
@@ -271,20 +305,13 @@
         kehu:{
           name:"",
           gender:"",
-          birthday:"",
           demand:"",
           followup:"",
           kehuid:"",
           phone:"",
-          departmentid:null,
-          joblevelid:null,
-          posid:null,
-          begindate:"",
-          remark:"",
           kfdate: "",
           kfjl:"",
           xingz:"",
-          remarks:"",
         },
         defaultProps: {
           children: 'children',
@@ -304,14 +331,13 @@
 
    mounted(){
       this.initKehus();
-      // this.initData();
+      this.initData();
     },
     methods:{
       emptyKehu(){
         this.kehu={
           name:"",
           gender:"",
-          birthday:"",
           demand:"",
           followup:"",
           kehuid:"",
@@ -320,9 +346,9 @@
           kfdate: "",
           kfjl:"",
           xingz:"",
-          remarks:"",
         }
       },
+
  doAddKehu(){
         if (this.kehu.id){
           this.$refs['kehuForm'].validate(valid=>{
