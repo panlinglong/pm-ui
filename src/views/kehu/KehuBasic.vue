@@ -99,8 +99,9 @@
 
       </div>
       <el-dialog title="新增看房记录" :visible.sync="dialogFormVisible">
-        <el-form :model="kehu" ref="kehuForm">
+        <el-form :model="kehu" ref="kehuaForm">
           <el-row :gutter="20">
+
             <el-col :span="8">
               <el-form-item label="看房日期：" prop="kfdate">
                 <el-date-picker
@@ -121,9 +122,10 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="doAddKfjl = false">确 定</el-button>
+          <el-button type="primary" @click="doAddKehua">确 定</el-button>
         </div>
       </el-dialog>
+
 
 
       <el-dialog
@@ -364,6 +366,27 @@
             if (valid){
               this.postRequest("/kehu/basic/",this.kehu).then(res=>{
                 this.dialogVisible = false;
+                this.initKehus();
+              })
+            }
+          })
+        }
+      },
+      doAddKehua(){
+        if (this.kehu.id){
+          this.$refs['kehuaForm'].validate(valid=>{
+            if (valid){
+              this.putRequest("/kehu/basic/kehua",this.kehu_a).then(res=>{
+                this.dialogFormVisible = false;
+                this.initKehus();
+              })
+            }
+          })
+        }else {
+          this.$refs['kehuaForm'].validate(valid=>{
+            if (valid){
+              this.postRequest("/kehu/basic/kehua",this.kehu_a).then(res=>{
+                this.dialogFormVisible = false;
                 this.initKehus();
               })
             }
