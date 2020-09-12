@@ -1,156 +1,220 @@
 <template>
     <div>
       <div>
-        <el-input placeholder="请输入房源名进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initEmps"></el-input>
-        <el-button icon="el-icon-search" type="primary" @click="initEmps">搜索</el-button>
-        <el-button icon="el-icon-plus" type="primary" @click="showAddEmpView">添加房源</el-button>
+        <el-input placeholder="请输入客户名进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initKehus"></el-input>
+        <el-button icon="el-icon-search" type="primary" @click="initKehus">搜索</el-button>
+        <el-button icon="el-icon-plus" type="primary" @click="showAddKehuView">添加客户</el-button>
       </div>
       <div style="margin-top: 10px">
         <el-table
-          :data="emps"
-          stripe
-          border
+          :data="kehus"
+          :cell-style="{background: '#fcfcfc',color: '#000'}"
           style="width: 100%">
-          <el-table-column
-            fixed
-            type="selection"
-            width="55">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="left" inline class="demo-table-expand">
+                <el-form-item label="客户姓名：">
+                  <span>{{ props.row.name }}</span>
+                </el-form-item>
+                <el-form-item label="性别：">
+                  <span>{{ props.row.gender }}</span>
+                </el-form-item>
+                <el-form-item label="联系方式：">
+                <span>{{ props.row.phone }}</span>
+              </el-form-item>
+                <el-form-item label="性质：">
+                  <span>{{ props.row.xingz }}</span>
+                </el-form-item>
+                <el-form-item label="需求：">
+                  <span>{{ props.row.demand }}</span>
+                </el-form-item>
+                <el-table
+                  :data="props.row.kehuAs"
+                  style="width: 100%">
+                  <el-table-column
+                    prop="kfdate"
+                    label="看房日期"
+                    width="180">
+                  </el-table-column>
+                  <el-table-column
+                      prop="kfjl"
+                    label="内容"
+                    width="200">
+                  </el-table-column>
+                  <el-table-column
+                    width="100">
+                    <template slot-scope="scope">
+                      <el-button
+                        @click.native.prevent="deleteKehua(scope.row,scope.$index)"
+                        type="text">
+                        删除
+                      </el-button>
+
+                    </template>
+                  </el-table-column>
+                </el-table>
+
+
+
+                <el-form-item label="客户跟进：">
+                  <span>{{ props.row.followup }}</span>
+                </el-form-item>
+
+              </el-form>
+            </template>
           </el-table-column>
           <el-table-column
-            fixed
-            prop="name"
-            label="姓名"
-            width="90">
+            label="编号"
+            prop="kehuid">
           </el-table-column>
           <el-table-column
-            prop="gender"
+            label="客户姓名"
+            prop="name">
+          </el-table-column>
+          <el-table-column
             label="性别"
-            width="60">
+            prop="gender">
           </el-table-column>
           <el-table-column
-            prop="birthday"
-            label="出生日期"
-            width="100">
+            label="联系方式："
+            prop="phone">
           </el-table-column>
           <el-table-column
-            prop="idcard"
-            label="身份证号"
-            width="170">
+            label="性质："
+            prop="xingz">
           </el-table-column>
           <el-table-column
-            prop="email"
-            label="邮箱"
-            width="200">
+            label="需求："
+            prop="demand">
           </el-table-column>
           <el-table-column
-            prop="phone"
-            label="电话号码"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="department.name"
-            label="所属部门">
-          </el-table-column>
-          <el-table-column
-            prop="joblevel.name"
-            label="职称"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="position.name"
-            label="职位"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            prop="begindate"
-            label="入职日期"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="workid"
-            label="工号"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
+            width="250">
             <template slot-scope="scope">
+                <el-button type="text" @click="addKehua(scope.row,scope.$index)"  >新增看房记录</el-button>
+
               <el-button
-                @click.native.prevent="showEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
+                @click.native.prevent="showKehu(scope.row,scope.$index)"
+                type="text">
                 编辑
               </el-button>
               <el-button
-                @click.native.prevent="deleteEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
+                @click.native.prevent="deleteKehu(scope.row,scope.$index)"
+                type="text">
                 删除
               </el-button>
+
             </template>
           </el-table-column>
+
         </el-table>
-        <div style="display: flex;justify-content: flex-end">
-          <el-pagination
-            background
-            @current-change="currentChange"
-            @size-change="sizeChange"
-            layout="sizes, prev, pager, next, jumper, ->, total, slot"
-            :total="total">
-          </el-pagination>
-        </div>
+
+
       </div>
+      <el-dialog title="新增看房记录" :visible.sync="dialogFormVisible">
+        <el-form :model="kehu_a" ref="kehuaForm">
+          <el-row :gutter="20">
+
+            <el-col :span="8">
+              <el-form-item label="看房日期：" prop="kfdate">
+                <el-date-picker
+                  v-model="kehu_a.kfdate"
+                  style="width: 200px"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="内容：" prop="kfjl">
+                <el-input  style="width:200px"  v-model="kehu_a.kfjl"></el-input>
+              </el-form-item>
+            </el-col>
+
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="doAddKehua">确 定</el-button>
+        </div>
+      </el-dialog>
+
+
+
       <el-dialog
         :title="title"
         :visible.sync="dialogVisible"
         width="70%">
         <div>
-          <el-form :model="emp" :rules="rules" ref="empForm">
+          <el-form :model="kehu" :rules="rules" ref="kehuForm">
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item label="姓名：" prop="name">
-                  <el-input  style="width:150px" placeholder="请输入员工姓名" v-model="emp.name"></el-input>
+                <el-form-item label="客户姓名：" prop="name">
+                  <el-input  style="width:150px" placeholder="请输入客户姓名" v-model="kehu.name"></el-input>
+                </el-form-item>
+              </el-col>
+
+
+              <el-col :span="7">
+                <el-form-item label="联系方式：" prop="phone">
+                  <el-input  style="width:150px" placeholder="请输入联系方式" v-model="kehu.phone"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="性别：" prop="gender">
-                  <el-radio-group v-model="emp.gender">
+                  <el-radio-group v-model="kehu.gender">
                     <el-radio label="男">男</el-radio>
                     <el-radio label="女">女</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
-                <el-form-item label="出生日期：" prop="birthday">
-                  <el-date-picker
-                    v-model="emp.birthday"
-                    type="date"
-                    style="width:200px"
-                    value-format="yyyy-MM-dd"
-                    placeholder="选择日期">
-                  </el-date-picker>
-                </el-form-item>
-              </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
-                <el-form-item label="身份证号码：" prop="idcard">
-                  <el-input  style="width:200px" placeholder="请输入员工身份证号码" v-model="emp.idcard"></el-input>
+                <el-form-item label="客户性质：" prop="xingz">
+                  <el-radio-group v-model="kehu.xingz">
+                    <el-radio label="上门">上门</el-radio>
+                    <el-radio label="介绍">介绍</el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </el-col>
+
+<!--
               <el-col :span="8">
-                <el-form-item label="电子邮箱：" prop="email">
-                  <el-input  style="width:150px" placeholder="电子邮箱" v-model="emp.email"></el-input>
+                <el-form-item label="负责人：" prop="people">
+                  <el-input  style="width:150px" placeholder="请输入接待人" v-model="emp.people"></el-input>
                 </el-form-item>
               </el-col>
+-->
+            </el-row>
+            <el-row :gutter="20">
+
               <el-col :span="8">
-                <el-form-item label="手机号码：" prop="phone">
-                  <el-input  style="width:150px" placeholder="手机号码" v-model="emp.phone"></el-input>
+                <el-form-item label="编号：" prop="kehuid">
+                  <el-input  style="width:150px" v-model="kehu.kehuid" disabled></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row :gutter="20">
+            <el-row >
+              <el-col :span="8">
+                <el-form-item label="需求：" prop="demand">
+                  <el-input  style="width:400px" v-model="kehu.demand" ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+              <el-row >
+                <el-input
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入内容" v-model="kehu.followup"
+                ></el-input>
+            </el-row>
+
+
+
+
+
+         <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
                   <el-popover
@@ -207,177 +271,193 @@
                   <el-input  style="width:150px" v-model="emp.workid" disabled></el-input>
                 </el-form-item>
               </el-col>
-            </el-row>
+            </el-row>-->
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="doAddEmp">确 定</el-button>
+          <el-button type="primary" @click="doAddKehu">确 定</el-button>
         </span>
       </el-dialog>
     </div>
+
+
 </template>
 
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
+</style>
+
 <script>
-  export default {
-    name: 'EmpBasic',
-    data(){
-      return{
-        title:'',
-        inputDepName:'',
-        allDeps:[],
-        visible:false,
-        dialogVisible:false,
-        emps:[],
-        keyword:'',
-        total:0,
-        page:1,
-        size:10,
-        joblevels:[],
-        positions:[],
-        emp:{
-          name:"",
-          gender:"",
-          birthday:"",
-          idcard:"",
-          email:"",
-          phone:"",
-          departmentid:null,
-          joblevelid:null,
-          posid:null,
-          begindate:"",
-          workid:""
-        },
-        defaultProps: {
-          children: 'children',
-          label: 'name'
-        },
-        rules:{
-          name:[{required:true,message:'请输入用户名',trigger:'blur'}],
-          gender:[{required:true,message:'请输入性别',trigger:'blur'}],
-          birthday:[{required:true,message:'请输入出生日期',trigger:'blur'}],
-          idcard:[{required:true,message:'请输入身份证号',trigger:'blur'}],
-          email:[{required:true,message:'请输入邮箱',trigger:'blur'},{type:'email',message: '邮箱格式不正确',trigger: 'blur'}],
-          phone:[{required:true,message:'请输入手机号',trigger:'blur'}],
-          departmentid:[{required:true,message:'请输入所属部门',trigger:'blur'}],
-          joblevelid:[{required:true,message:'请输入职称',trigger:'blur'}],
-          posid:[{required:true,message:'请输入职位',trigger:'blur'}],
-          begindate:[{required:true,message:'请输入入职日期',trigger:'blur'}],
-        }
+export default {
+  name: 'KehuBasic',
+  data(){
+    return{
+      title:'',
+      inputDepName:'',
+      allDeps:[],
+      visible:false,
+      dialogVisible:false,
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
+      kehus:[{
+      }],
+      keyword:'',
+      total:0,
+      page:1,
+      size:10,
+      joblevels:[],
+      positions:[],
+      kehu:{
+        name:"",
+        gender:"",
+        demand:"",
+        followup:"",
+        kehuid:"",
+        phone: '',
+        kfdate: '',
+        kfjl: '',
+        xingz: ''
+      },
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      kehu_a: {
+        kehuid:"",
+        kfdate: '',
+        kfjl: '',
+      },
+      rules:{
+        name:[{required:true,message:'请输入客户姓名',trigger:'blur'}],
+        gender:[{required:true,message:'请输入性别',trigger:'blur'}],
+        demand:[{required:true,message:'请输入需求',trigger:'blur'}],
+        phone:[{required:true,message:'请输入联系方式',trigger:'blur'}],
+        xingz:[{required:true,message:'公司/中介房源',trigger:'blur'}],
       }
-    },
-    mounted(){
-      this.initEmps();
+
+    }
+  },
+
+
+   mounted(){
+      this.initKehus();
       this.initData();
     },
     methods:{
-      emptyEmp(){
-        this.emp={
+      emptyKehu(){
+        this.kehu={
           name:"",
           gender:"",
-          birthday:"",
-          idcard:"",
-          email:"",
+          demand:"",
+          followup:"",
+          kehuid:"",
           phone:"",
-          departmentid:null,
-          joblevelid:null,
-          posid:null,
-          begindate:"",
-          workid:""
+          remark:"",
+          kfdate: "",
+          kfjl:"",
+          xingz:"",
         }
-        this.inputDepName='';
       },
-      doAddEmp(){
-        if (this.emp.id){
-          this.$refs['empForm'].validate(valid=>{
+
+ doAddKehu(){
+        if (this.kehu.id){
+          this.$refs['kehuForm'].validate(valid=>{
             if (valid){
-              this.putRequest("/employee/basic/",this.emp).then(res=>{
+              this.putRequest("/kehu/basic/",this.kehu).then(res=>{
                 this.dialogVisible = false;
-                this.initEmps();
+                this.initKehus();
               })
             }
           })
         }else {
-          this.$refs['empForm'].validate(valid=>{
+          this.$refs['kehuForm'].validate(valid=>{
             if (valid){
-              this.postRequest("/employee/basic/",this.emp).then(res=>{
+              this.postRequest("/kehu/basic/",this.kehu).then(res=>{
                 this.dialogVisible = false;
-                this.initEmps();
+                this.initKehus();
               })
             }
           })
         }
       },
-      handleNodeClick(data){
-        this.inputDepName = data.name;
-        this.emp.departmentid = data.id;
-        this.visible = !this.visible
+      addKehua(row,index) {
+        this.kehu_a.kehuid = row.kehuid
+        this.dialogFormVisible = true
       },
-      showDepView(){
-        this.visible = !this.visible
+      doAddKehua(){
+        if (this.kehu_a.id){
+          this.$refs['kehuaForm'].validate(valid=>{
+            if (valid){
+              this.putRequest("/kehu/basic/kehua",this.kehu_a).then(res=>{
+                this.dialogFormVisible = false;
+                this.initKehus();
+              })
+            }
+          })
+        }else {
+          this.$refs['kehuaForm'].validate(valid=>{
+            if (valid){
+              this.postRequest("/kehu/basic/kehua",this.kehu_a).then(res=>{
+                this.dialogFormVisible = false;
+                this.initKehus();
+              })
+            }
+          })
+        }
       },
-      getMaxWorkID(){
-        this.getRequest("/employee/basic/maxWorkID").then(res=>{
+  getMaxWorkID(){
+        this.getRequest("/kehu/basic/maxWorkID").then(res=>{
           if (res){
-            this.emp.workid = res.object;
+            this.kehu.kehuid = res.object;
           }
         })
       },
-      initPosition(){
-        this.getRequest("/employee/basic/positions").then(res=>{
-          this.positions = res;
-        })
-      },
-      initData(){
-        if (!window.sessionStorage.getItem("joblevels")) {
-          this.getRequest("/employee/basic/joblevels").then(res => {
-            this.joblevels = res;
-            window.sessionStorage.setItem("joblevels",JSON.stringify(res))
-          })
-        }else{
-          this.joblevels = JSON.parse(window.sessionStorage.getItem("joblevels"))
-        }
-        if (!window.sessionStorage.getItem("deps")){
-          this.getRequest("/employee/basic/deps").then(res=>{
-            this.allDeps = res;
-            window.sessionStorage.setItem("deps",JSON.stringify(res))
-          })
-        }else{
-          this.allDeps = JSON.parse(window.sessionStorage.getItem("deps"))
-        }
-      },
       currentChange(currentPage){
         this.page = currentPage;
-        this.initEmps();
+        this.initKehus();
       },
       sizeChange(currentSize){
         this.size = currentSize;
-        this.initEmps();
+        this.initKehus();
       },
-      initEmps(){
-        this.getRequest("/employee/basic/?page="+this.page+"&size="+this.size+"&keyword="+this.keyword).then(res=>{
+      initKehus(){
+        this.getRequest("/kehu/basic/?page="+this.page+"&size="+this.size+"&keyword="+this.keyword).then(res=>{
           if (res){
-            this.emps = res.data;
+            this.kehus = res.data;
             this.total = res.total;
           }
         })
       },
-      showAddEmpView(){
-        this.title="添加员工"
-        this.emptyEmp();
+      showAddKehuView(){
+        this.title="添加客户"
+        if(this.$refs['kehuForm']!=undefined){
+          this.$refs['kehuForm'].resetFields()
+        }
+        this.emptyKehu();
         this.getMaxWorkID();
-        this.initPosition();
         this.dialogVisible=true;
       },
-      deleteEmp(row){
-        this.$confirm('此操作将永久删除【'+row.name+'】员工, 是否继续?', '提示', {
+      deleteKehu(row){
+        this.$confirm('此操作将永久删除【'+row.name+'】客户, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteRequest("/employee/basic/"+row.id).then(res=>{
+          this.deleteRequest("/kehu/basic/"+row.id).then(res=>{
             if (res){
-              this.initEmps();
+              this.initKehus();
             }
           })
         }).catch(() => {
@@ -387,11 +467,30 @@
           });
         });
       },
-      showEmp(row){
-        this.title='编辑员工信息';
-        this.initPosition();
-        this.emp=row;
-        this.inputDepName=row.department.name;
+      deleteKehua(row){
+        this.$confirm('此操作将永久删除【'+row.kfdate+'】记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteRequest("/kehu/basic/kehua/"+row.id).then(res=>{
+            if (res){
+              this.initKehus();
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      showKehu(row){
+        this.title='编辑客户信息';
+        if(this.$refs['kehuForm']!=undefined){
+          this.$refs['kehuForm'].resetFields()
+        }
+        this.kehu=row;
         this.dialogVisible=true;
       }
     }

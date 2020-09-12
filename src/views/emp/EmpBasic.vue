@@ -7,6 +7,7 @@
       </div>
       <div style="margin-top: 10px">
         <el-table
+          :cell-style="{background: '#fcfcfc',color: '#000'}"
           :data="emps"
           style="width: 100%">
           <el-table-column type="expand">

@@ -8,6 +8,7 @@
       <div style="margin-top: 10px">
         <el-table
           :data="chuzus"
+          :cell-style="{background: '#fcfcfc',color: '#000'}"
           style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">

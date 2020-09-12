@@ -8,6 +8,7 @@
       <div style="margin-top: 10px">
         <el-table
           :data="kehus"
+          :cell-style="{background: '#fcfcfc',color: '#000'}"
           style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
@@ -39,6 +40,17 @@
                       prop="kfjl"
                     label="内容"
                     width="200">
+                  </el-table-column>
+                  <el-table-column
+                    width="100">
+                    <template slot-scope="scope">
+                      <el-button
+                        @click.native.prevent="deleteKehua(scope.row,scope.$index)"
+                        type="text">
+                        删除
+                      </el-button>
+
+                    </template>
                   </el-table-column>
                 </el-table>
 
@@ -78,7 +90,7 @@
           <el-table-column
             width="250">
             <template slot-scope="scope">
-                <el-button type="text" @click="dialogFormVisible = true"  >新增看房记录</el-button>
+                <el-button type="text" @click="addKehua(scope.row,scope.$index)"  >新增看房记录</el-button>
 
               <el-button
                 @click.native.prevent="showKehu(scope.row,scope.$index)"
@@ -99,13 +111,13 @@
 
       </div>
       <el-dialog title="新增看房记录" :visible.sync="dialogFormVisible">
-        <el-form :model="kehu" ref="kehuaForm">
+        <el-form :model="kehu_a" ref="kehuaForm">
           <el-row :gutter="20">
 
             <el-col :span="8">
               <el-form-item label="看房日期：" prop="kfdate">
                 <el-date-picker
-                  v-model="kehu.kfdate"
+                  v-model="kehu_a.kfdate"
                   style="width: 200px"
                   type="date"
                   value-format="yyyy-MM-dd"
@@ -115,9 +127,10 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="内容：" prop="kfjl">
-                <el-input  style="width:200px"  v-model="kehu.kfjl"></el-input>
+                <el-input  style="width:200px"  v-model="kehu_a.kfjl"></el-input>
               </el-form-item>
             </el-col>
+
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -140,11 +153,7 @@
                   <el-input  style="width:150px" placeholder="请输入客户姓名" v-model="kehu.name"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
-                <el-form-item label="需求：" prop="demand">
-                  <el-input  style="width:150px" v-model="kehu.demand" ></el-input>
-                </el-form-item>
-              </el-col>
+
 
               <el-col :span="7">
                 <el-form-item label="联系方式：" prop="phone">
@@ -187,12 +196,18 @@
               </el-col>
             </el-row>
             <el-row >
-
               <el-col :span="8">
-                <el-form-item label="客户跟进：" prop="followup">
-                  <el-input  style="width:150px" v-model="kehu.followup" ></el-input>
+                <el-form-item label="需求：" prop="demand">
+                  <el-input  style="width:400px" v-model="kehu.demand" ></el-input>
                 </el-form-item>
               </el-col>
+            </el-row>
+              <el-row >
+                <el-input
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入内容" v-model="kehu.followup"
+                ></el-input>
             </el-row>
 
 
@@ -285,50 +300,55 @@
 </style>
 
 <script>
-  export default {
-    name: 'KehuBasic',
-    data(){
-      return{
-        title:'',
-        inputDepName:'',
-        allDeps:[],
-        visible:false,
-        dialogVisible:false,
-        dialogFormVisible: false,
-        formLabelWidth: '120px',
-        kehus:[{
-        }],
-        keyword:'',
-        total:0,
-        page:1,
-        size:10,
-        joblevels:[],
-        positions:[],
-        kehu:{
-          name:"",
-          gender:"",
-          demand:"",
-          followup:"",
-          kehuid:"",
-          phone:"",
-          kfdate: "",
-          kfjl:"",
-          xingz:"",
-        },
-        defaultProps: {
-          children: 'children',
-          label: 'name'
-        },
-        rules:{
-          name:[{required:true,message:'请输入客户姓名',trigger:'blur'}],
-          gender:[{required:true,message:'请输入性别',trigger:'blur'}],
-          demand:[{required:true,message:'请输入需求',trigger:'blur'}],
-          phone:[{required:true,message:'请输入联系方式',trigger:'blur'}],
-          xingz:[{required:true,message:'公司/中介房源',trigger:'blur'}],
-        }
-
+export default {
+  name: 'KehuBasic',
+  data(){
+    return{
+      title:'',
+      inputDepName:'',
+      allDeps:[],
+      visible:false,
+      dialogVisible:false,
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
+      kehus:[{
+      }],
+      keyword:'',
+      total:0,
+      page:1,
+      size:10,
+      joblevels:[],
+      positions:[],
+      kehu:{
+        name:"",
+        gender:"",
+        demand:"",
+        followup:"",
+        kehuid:"",
+        phone: '',
+        kfdate: '',
+        kfjl: '',
+        xingz: ''
+      },
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
+      kehu_a: {
+        kehuid:"",
+        kfdate: '',
+        kfjl: '',
+      },
+      rules:{
+        name:[{required:true,message:'请输入客户姓名',trigger:'blur'}],
+        gender:[{required:true,message:'请输入性别',trigger:'blur'}],
+        demand:[{required:true,message:'请输入需求',trigger:'blur'}],
+        phone:[{required:true,message:'请输入联系方式',trigger:'blur'}],
+        xingz:[{required:true,message:'公司/中介房源',trigger:'blur'}],
       }
-    },
+
+    }
+  },
 
 
    mounted(){
@@ -372,8 +392,12 @@
           })
         }
       },
+      addKehua(row,index) {
+        this.kehu_a.kehuid = row.kehuid
+        this.dialogFormVisible = true
+      },
       doAddKehua(){
-        if (this.kehu.id){
+        if (this.kehu_a.id){
           this.$refs['kehuaForm'].validate(valid=>{
             if (valid){
               this.putRequest("/kehu/basic/kehua",this.kehu_a).then(res=>{
@@ -432,6 +456,24 @@
           type: 'warning'
         }).then(() => {
           this.deleteRequest("/kehu/basic/"+row.id).then(res=>{
+            if (res){
+              this.initKehus();
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+      deleteKehua(row){
+        this.$confirm('此操作将永久删除【'+row.kfdate+'】记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteRequest("/kehu/basic/kehua/"+row.id).then(res=>{
             if (res){
               this.initKehus();
             }
