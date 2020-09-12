@@ -14,7 +14,6 @@
             <div class="hrinfo-container">
               <div>用户名：{{hr.name}}</div>
               <div>手机号码：{{hr.phone}}</div>
-              <div>电话号码：{{hr.telephone}}</div>
               <div>地址：{{hr.address}}</div>
               <div>用户状态：<el-switch
                 v-model="hr.enabled"

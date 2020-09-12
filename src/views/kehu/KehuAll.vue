@@ -194,6 +194,11 @@
                   <el-input  style="width:150px" v-model="kehu.kehuid" disabled></el-input>
                 </el-form-item>
               </el-col>
+              <el-col :span="8">
+                <el-form-item label="员工编号：" prop="hrid">
+                  <el-input  style="width:150px" v-model="kehu.hrid" disabled></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
             <el-row >
               <el-col :span="8">
@@ -203,6 +208,7 @@
               </el-col>
             </el-row>
               <el-row >
+                <span>客户跟进：</span>
                 <el-input
                   type="textarea"
                   :rows="2"
@@ -328,7 +334,8 @@ export default {
         phone: '',
         kfdate: '',
         kfjl: '',
-        xingz: ''
+        xingz: '',
+        hrid:'',
       },
       defaultProps: {
         children: 'children',
@@ -368,6 +375,7 @@ export default {
           kfdate: "",
           kfjl:"",
           xingz:"",
+          hrid:"",
         }
       },
 
@@ -424,6 +432,13 @@ export default {
           }
         })
       },
+      getMyHrID(){
+        this.getRequest("/kehu/basic/myHrID").then(res=>{
+          if (res){
+            this.kehu.hrid = res.object;
+          }
+        })
+      },
       currentChange(currentPage){
         this.page = currentPage;
         this.initKehus();
@@ -447,6 +462,7 @@ export default {
         }
         this.emptyKehu();
         this.getMaxWorkID();
+        this.getMyHrID();
         this.dialogVisible=true;
       },
       deleteKehu(row){
