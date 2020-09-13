@@ -30,6 +30,83 @@
               <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
             </el-breadcrumb>
             <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
+              <div style="margin-top: 10px">
+                <el-table
+                  :data="chuzus"
+                  :cell-style="{background: '#fcfcfc',color: '#000'}"
+                  style="width: 100%">
+                  <el-table-column type="expand">
+                    <template slot-scope="props">
+                      <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="小区名称：">
+                          <span>{{ props.row.name }}</span>
+                        </el-form-item>
+                        <el-form-item label="房号：">
+                          <span>{{ props.row.idcard }}</span>
+                        </el-form-item>
+                        <el-form-item label="付款方式：">
+                          <span>{{ props.row.fangs }}</span>
+                        </el-form-item>
+                        <el-form-item label="车库/车位：">
+                          <span>{{ props.row.car }}</span>
+                        </el-form-item>
+                        <el-form-item label="面积：">
+                          <span>{{ props.row.email }}</span>
+                        </el-form-item>
+                        <el-form-item label="学区：">
+                          <span>{{ props.row.xuequ }}</span>
+                        </el-form-item>
+                        <el-form-item label="室内规划：">
+                          <span>{{ props.row.jsjt1 }}</span>
+                          <span>{{ props.row.jsjt2 }}</span>
+                          <span>{{ props.row.jsjt3 }}</span>
+                        </el-form-item>
+                        <el-form-item label="接待人：">
+                          <span>{{ props.row.people}}</span>
+                        </el-form-item>
+                        <el-form-item label="装修/毛坯：">
+                          <span>{{ props.row.reno }}</span>
+                        </el-form-item>
+                        <el-form-item label="租金：">
+                          <span>{{ props.row.price }}</span>
+                        </el-form-item>
+                        <el-form-item label="上门/介绍：">
+                          <span>{{ props.row.intr }}</span>
+                        </el-form-item>
+                        <el-form-item label="看房时间：">
+                          <span>{{ props.row.looktime }}</span>
+                        </el-form-item>
+                        <el-form-item label="起租时间：">
+                          <span>{{ props.row.begindate }}</span>
+                        </el-form-item>
+                        <el-form-item label="到期时间：">
+                          <span>{{ props.row.endDate }}</span>
+                        </el-form-item>
+                      </el-form>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="编号"
+                    prop="workid">
+                  </el-table-column>
+                  <el-table-column
+                    label="小区名称"
+                    prop="name">
+                  </el-table-column>
+                  <el-table-column
+                    label="房号"
+                    prop="idcard">
+                  </el-table-column>
+                  <el-table-column
+                    label="接待人："
+                    prop="people">
+                  </el-table-column>
+                  <el-table-column
+                    label="到期时间："
+                    prop="endDate">
+                  </el-table-column>
+                </el-table>
+              </div>
              <div class="demo-image">
               <div class="block" key="fit">
                 <span class="demonstration">{{ fit }}</span>
@@ -53,9 +130,41 @@
     name: 'Home',
     data(){
       return{
+        chuzus:[{
+      }],
+        chuzu:{
+          name:"",
+          fangs:"",
+          birthday:"",
+          idcard:"",
+          email:"",
+          people:"",
+          phone2:"",
+          departmentid:null,
+          joblevelid:null,
+          posid:null,
+          begindate:"",
+          workid:"",
+          car:"",
+          reno:"",
+          price:"",
+          looktime:"",
+          intr:"",
+          xuequ:"",
+          jsjt1:"",
+          jsjt2:"",
+          jsjt3:"",
+          xingz:"",
+          remarks:"",
+          endDate:"",
+        },
         url:'/static/heng1.png',
         user:JSON.parse(window.sessionStorage.getItem("user"))
       }
+    },
+    mounted(){
+      this.initChuzus();
+      this.initData();
     },
     computed:{
       menus(){
@@ -81,7 +190,14 @@
               });
             });
           }
-        }
+        },
+      initChuzus(){
+        this.getRequest("/chuzu/basic/endtime/").then(res=>{
+          if (res){
+            this.chuzus = res.data;
+          }
+        })
+      },
       }
   }
 </script>
@@ -95,7 +211,6 @@
     font-size: 70px;
     font-family: 华文行楷;
     color: #3d75ff;
-    padding-top: 300px;
 
   }
   .homeHeader{
