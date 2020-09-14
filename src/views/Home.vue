@@ -30,6 +30,7 @@
               <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
             </el-breadcrumb>
             <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
+              <span>租房到期提醒（30天）</span>
               <div style="margin-top: 10px">
                 <el-table
                   :data="chuzus"
@@ -208,9 +209,9 @@
   }
   .homeWelcome{
     text-align: center;
-    font-size: 70px;
+    font-size: 40px;
     font-family: 华文行楷;
-    color: #3d75ff;
+    color: #ff0000;
 
   }
   .homeHeader{
