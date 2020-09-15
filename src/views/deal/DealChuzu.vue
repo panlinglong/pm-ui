@@ -1,14 +1,14 @@
 <template>
     <div>
       <div>
-        <el-input placeholder="请输入房屋坐落位置进行搜索" prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initEmpdeals"></el-input>
-        <el-button icon="el-icon-search" type="primary" @click="initEmpdeals">搜索</el-button>
-        <el-button icon="el-icon-plus" type="primary" @click="showAddEmpdealView">添加成交记录</el-button>
+        <el-input placeholder="请输入房屋坐落位置进行搜索" prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initChuzudeals"></el-input>
+        <el-button icon="el-icon-search" type="primary" @click="initChuzudeals">搜索</el-button>
+        <el-button icon="el-icon-plus" type="primary" @click="showAddChuzudealView">添加成交记录</el-button>
       </div>
       <div style="margin-top: 10px">
         <el-table
           :cell-style="{background: '#fcfcfc',color: '#000'}"
-          :data="empdeals"
+          :data="chuzudeals"
           style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
@@ -16,9 +16,7 @@
                 <el-form-item label="房屋坐落位置：">
                   <span>{{ props.row.place }}</span>
                 </el-form-item>
-                <el-form-item label="成交时间：">
-                <span>{{ props.row.beginDate }}</span>
-              </el-form-item>
+
                 <el-form-item label="甲方：">
                   <span>{{ props.row.jiafang }}</span>
                 </el-form-item>
@@ -28,6 +26,12 @@
                 <el-form-item label="甲方联系方式：">
                   <span>{{ props.row.phone1 }}</span>
                 </el-form-item>
+                <el-form-item label="起租时间：">
+                <span>{{ props.row.beginDate }}</span>
+              </el-form-item>
+                <el-form-item label="到期时间：">
+                <span>{{ props.row.endDate }}</span>
+              </el-form-item>
                 <el-form-item label="乙方：">
                   <span>{{ props.row.yifang }}</span>
                 </el-form-item>
@@ -38,11 +42,11 @@
                   <span>{{ props.row.phone2}}</span>
                 </el-form-item>
 
-                <el-form-item label="成交金额：">
+                <el-form-item label="租金：">
                   <span>{{ props.row.price1 }}</span>
                 </el-form-item>
-                <el-form-item label="付款金额：">
-                  <span>{{ props.row.price2 }}</span>
+                <el-form-item label="付款方式：">
+                  <span>{{ props.row.payway }}</span>
                 </el-form-item>
                 <el-form-item label="合同录入：">
                   <span>{{ props.row.details }}</span>
@@ -68,20 +72,24 @@
             prop="yifang">
           </el-table-column>
           <el-table-column
-            label="成交时间"
+            label="起租时间"
             prop="beginDate">
+          </el-table-column>
+          <el-table-column
+            label="到期时间"
+            prop="endDate">
           </el-table-column>
           <el-table-column
             width="100">
             <template slot-scope="scope">
               <el-button
-                @click.native.prevent="showEmpdeal(scope.row,scope.$index)"
+                @click.native.prevent="showChuzudeal(scope.row,scope.$index)"
                 type="text"
                 size="small">
                 编辑
               </el-button>
               <el-button
-                @click.native.prevent="deleteEmpdeal(scope.row,scope.$index)"
+                @click.native.prevent="deleteChuzudeal(scope.row,scope.$index)"
                 type="text"
                 size="small">
                 删除
@@ -211,37 +219,35 @@
         :visible.sync="dialogVisible"
         width="70%">
         <div>
-          <el-form :model="empdeal" :rules="rules" ref="empdealForm">
+          <el-form :model="chuzudeal" :rules="rules" ref="chuzudealForm">
             <el-row :gutter="1">
               <el-col :span="10">
                 <el-form-item label="房屋坐落位置：" prop="place">
-                  <el-input  style="width:300px" placeholder="请输入房屋坐落位置" v-model="empdeal.place"></el-input>
+                  <el-input  style="width:300px" placeholder="请输入房屋坐落位置" v-model="chuzudeal.place"></el-input>
                 </el-form-item>
               </el-col>
-            </el-row>
-              <el-row :gutter="1">
-              <el-col :span="8">
-                <el-form-item label="成交金额：" prop="price1">
-                  <el-input  style="width:150px" placeholder="请输入成交金额" v-model="empdeal.price1"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="付款金额：" prop="price2">
-                  <el-input  style="width:150px" placeholder="请输入付款金额" v-model="empdeal.price2"></el-input>
+              <el-col :span="10">
+                <el-form-item label="租金：" prop="price1">
+                  <el-input  style="width:150px" placeholder="请输入租金" v-model="chuzudeal.price1"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
               <el-row :gutter="1">
               <el-col :span="8">
                 <el-form-item label="甲方：" prop="jiafang">
-                  <el-input  style="width:150px" placeholder="请输入甲方" v-model="empdeal.jiafang"></el-input>
+                  <el-input  style="width:150px" placeholder="请输入甲方" v-model="chuzudeal.jiafang"></el-input>
                 </el-form-item>
               </el-col>
                 <el-col :span="8">
                 <el-form-item label="乙方：" prop="yifang">
-                  <el-input  style="width:150px" placeholder="请输入乙方" v-model="empdeal.yifang"></el-input>
+                  <el-input  style="width:150px" placeholder="请输入乙方" v-model="chuzudeal.yifang"></el-input>
                 </el-form-item>
               </el-col>
+                <el-col :span="8">
+                  <el-form-item label="付款方式：" prop="payway">
+                    <el-input  style="width:200px" placeholder="请输入付款方式" v-model="chuzudeal.payway"></el-input>
+                  </el-form-item>
+                </el-col>
 
 
 
@@ -251,12 +257,12 @@
             <el-row :gutter="3">
               <el-col :span="8">
                 <el-form-item label="甲方身份证号码：" prop="jsfz">
-                  <el-input  style="width:200px" placeholder="请输入" v-model="empdeal.jsfz"></el-input>
+                  <el-input  style="width:200px" placeholder="请输入" v-model="chuzudeal.jsfz"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="乙方身份证号码：" prop="ysfz">
-                  <el-input  style="width:200px" placeholder="请输入" v-model="empdeal.ysfz"></el-input>
+                  <el-input  style="width:200px" placeholder="请输入" v-model="chuzudeal.ysfz"></el-input>
                 </el-form-item>
               </el-col>
 
@@ -265,25 +271,36 @@
             <el-row :gutter="3">
               <el-col :span="8">
                 <el-form-item label="甲方联系方式：" prop="phone1">
-                  <el-input  style="width:150px" placeholder="请输入" v-model="empdeal.phone1"></el-input>
+                  <el-input  style="width:150px" placeholder="请输入" v-model="chuzudeal.phone1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
                 <el-form-item label="乙方联系方式：" prop="phone2">
-                  <el-input  style="width:150px" placeholder="请输入" v-model="empdeal.phone2"></el-input>
+                  <el-input  style="width:150px" placeholder="请输入" v-model="chuzudeal.phone2"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="编号：" prop="workid">
-                  <el-input  style="width:150px" v-model="empdeal.workid" disabled></el-input>
+                  <el-input  style="width:150px" v-model="chuzudeal.workid" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="成交时间：" prop="begindate">
+                <el-form-item label="起租时间：" prop="beginDate">
                   <el-date-picker
-                    v-model="empdeal.begindate"
+                    v-model="chuzudeal.beginDate"
+                    style="width: 200px"
+                    type="date"
+                    value-format="yyyy-MM-dd"
+                    placeholder="选择日期">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="到期时间：" prop="endDate">
+                  <el-date-picker
+                    v-model="chuzudeal.endDate"
                     style="width: 200px"
                     type="date"
                     value-format="yyyy-MM-dd"
@@ -297,7 +314,7 @@
               <el-input
                 type="textarea"
                 :rows="10"
-                placeholder="请输入内容" v-model="empdeal.details"
+                placeholder="请输入内容" v-model="chuzudeal.details"
               ></el-input>
             </el-row>
          <!--   <el-row :gutter="20">
@@ -362,7 +379,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="doAddEmpdeal">确 定</el-button>
+          <el-button type="primary" @click="doAddChuzudeal">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -385,7 +402,7 @@
 
 <script>
   export default {
-    name: 'EmpdealBasic',
+    name: 'ChuzudealBasic',
     data(){
       return{
         title:'',
@@ -393,7 +410,7 @@
         allDeps:[],
         visible:false,
         dialogVisible:false,
-        empdeals:[{
+        chuzudeals:[{
         }],
         keyword:'',
         total:0,
@@ -401,7 +418,7 @@
         size:10,
         joblevels:[],
         positions:[],
-        empdeal:{
+        chuzudeal:{
           place:"",
           jiafang:"",
           yifang:"",
@@ -413,9 +430,11 @@
           joblevelid:null,
           posid:null,
           beginDate:"",
+          endDate:"",
           workid:"",
           price1:"",
           price2:"",
+          payway:"",
           details:"",
         },
         defaultProps: {
@@ -426,7 +445,8 @@
           place:[{required:true,message:'请输入坐落位置',trigger:'blur'}],
           jiafang:[{required:true,message:'请输入甲方',trigger:'blur'}],
           yifang:[{required:true,message:'请输入乙方',trigger:'blur'}],
-          price1:[{required:true,message:'请输入成交金额',trigger:'blur'}],
+          price1:[{required:true,message:'请输入租金',trigger:'blur'}],
+          payway:[{required:true,message:'请输入付款方式',trigger:'blur'}],
         }
 
       }
@@ -434,12 +454,12 @@
 
 
    mounted(){
-      this.initEmpdeals();
+      this.initChuzudeals();
       // this.initData();
     },
     methods:{
-      emptyEmpdeal(){
-        this.empdeal={
+      emptyChuzudeal(){
+        this.chuzudeal={
           place:"",
           jiafang:"",
           yifang:"",
@@ -451,74 +471,76 @@
           joblevelid:null,
           posid:null,
           beginDate:"",
+          endDate:"",
           workid:"",
           price1:"",
           price2:"",
+          payway:"",
           details:"",
         }
       },
- doAddEmpdeal(){
-        if (this.empdeal.id){
-          this.$refs['empdealForm'].validate(valid=>{
+ doAddChuzudeal(){
+        if (this.chuzudeal.id){
+          this.$refs['chuzudealForm'].validate(valid=>{
             if (valid){
-              this.putRequest("/deal/basic/",this.empdeal).then(res=>{
+              this.putRequest("/deal/chuzu/",this.chuzudeal).then(res=>{
                 this.dialogVisible = false;
-                this.initEmpdeals();
+                this.initChuzudeals();
               })
             }
           })
         }else {
-          this.$refs['empdealForm'].validate(valid=>{
+          this.$refs['chuzudealForm'].validate(valid=>{
             if (valid){
-              this.postRequest("/deal/basic/",this.empdeal).then(res=>{
+              this.postRequest("/deal/chuzu/",this.chuzudeal).then(res=>{
                 this.dialogVisible = false;
-                this.initEmpdeals();
+                this.initChuzudeals();
               })
             }
           })
         }
       },
   getMaxWorkID(){
-        this.getRequest("/deal/basic/maxWorkID").then(res=>{
+        this.getRequest("/deal/chuzu/maxWorkID").then(res=>{
           if (res){
-            this.empdeal.workid = res.object;
+            this.chuzudeal.workid = res.object;
           }
         })
       },
       currentChange(currentPage){
         this.page = currentPage;
-        this.initEmpdeals();
+        this.initChuzudeals();
       },
       sizeChange(currentSize){
         this.size = currentSize;
-        this.initEmpdeals();
+        this.initChuzudeals();
       },
-      initEmpdeals(){
-        this.getRequest("/deal/basic/?page="+this.page+"&size="+this.size+"&keyword="+this.keyword).then(res=>{
+      initChuzudeals(){
+        this.getRequest("/deal/chuzu/?page="+this.page+"&size="+this.size+"&keyword="+this.keyword).then(res=>{
           if (res){
-            this.empdeals = res.data;
+            this.chuzudeals = res.data;
             this.total = res.total;
           }
         })
       },
-      showAddEmpdealView(){
+      showAddChuzudealView(){
         this.title="添加房源"
-        if(this.$refs['empdealForm']!=undefined){
-          this.$refs['empdealForm'].resetFields()
+        if(this.$refs['chuzudealForm']!=undefined){
+          this.$refs['chuzudealForm'].resetFields()
         }
-        this.emptyEmpdeal();
+        this.emptyChuzudeal();
         this.getMaxWorkID();
         this.dialogVisible=true;
       },
-      deleteEmpdeal(row){
+      deleteChuzudeal(row){
         this.$confirm('此操作将永久删除【'+row.name+'】房源, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteRequest("/deal/basic/"+row.id).then(res=>{
+          this.deleteRequest("/deal/chuzu/"+row.id).then(res=>{
             if (res){
-              this.initEmpdeals();
+              this.initChuzudeals();
             }
           })
         }).catch(() => {
@@ -528,12 +550,12 @@
           });
         });
       },
-      showEmpdeal(row){
+      showChuzudeal(row){
         this.title='编辑房源信息';
-        if(this.$refs['empdealForm']!=undefined){
-          this.$refs['empdealForm'].resetFields()
+        if(this.$refs['chuzudealForm']!=undefined){
+          this.$refs['chuzudealForm'].resetFields()
         }
-        this.empdeal=row;
+        this.chuzudeal=row;
         this.dialogVisible=true;
       }
     }
