@@ -1,4 +1,5 @@
 <template>
+
     <div>
       <div>
         <el-input placeholder="请输入房源名进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initEmps"></el-input>
@@ -57,6 +58,23 @@
                 <el-form-item label="成交时间：">
                   <span>{{ props.row.begindate }}</span>
                 </el-form-item>
+                <el-upload
+                  action="/employee/basic/img/"
+                  accept="image/png, image/jpeg"
+                  list-type="picture-card"
+                  :file-list="emp.imagepath"
+                  :before-upload="beforeUploadPicture"
+                  :on-preview="handlePictureCardPreview"
+                  :on-progress="uploadProgress"
+                  :on-success="uploadSuccess"
+                  :on-error="uploadError"
+                  :on-remove="handleRemove"
+                  :show-file-list="true">
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogImageVisible">
+                  <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
 
               </el-form>
             </template>
@@ -379,6 +397,8 @@
                 </el-form-item>
               </el-col>
             </el-row>
+
+
          <!--   <el-row :gutter="20">
               <el-col :span="8">
                 <el-form-item label="所属部门：" prop="departmentid">
@@ -448,6 +468,7 @@
 </template>
 
 <style>
+
 .demo-table-expand {
   font-size: 0;
 }
@@ -467,6 +488,7 @@
     name: 'EmpBasic',
     data(){
       return{
+        dialogImageUrl: '',
         options4: [{
           value: '未出售',
           label: '未出售'
@@ -572,6 +594,7 @@
         inputDepName:'',
         allDeps:[],
         visible:false,
+        dialogImageVisible:false,
         dialogVisible:false,
         emps:[{
         }],
@@ -605,6 +628,11 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          imagepath:"",
+        },
+        imgpath:{
+          workid:"",
+          imagepath:"",
         },
         defaultProps: {
           children: 'children',
@@ -636,6 +664,30 @@
       // this.initData();
     },
     methods:{
+      beforeUploadPicture(file) {
+        if(file.size > 10*1024*1024){
+          this.$message.error("上传图片不能大于10M");
+          return false;
+        }
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.imgpath.workid = row.workid;
+        this.dialogImageVisible = true;
+      },
+      uploadProgress(event,file, fileList){
+        this.uploadComplete = false;
+      },
+      uploadSuccess(res, file, fileList) {
+        this.uploadComplete = true;
+        this.fileChange(fileList);
+      },
+      uploadError(err, file, fileList) {
+        this.$message.error("上传出错");
+      },
       emptyEmp(){
         this.emp={
           name:"",
@@ -658,6 +710,7 @@
           jsjt3:"",
           xingz:"",
           remarks:"",
+          imagepath:"",
         }
       },
  doAddEmp(){
