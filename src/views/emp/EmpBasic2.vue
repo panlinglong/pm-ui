@@ -1,4 +1,5 @@
 <template>
+
     <div>
       <div>
         <el-input placeholder="请输入房源名进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initEmps"></el-input>
@@ -10,7 +11,7 @@
           :cell-style="{background: '#fcfcfc',color: '#000'}"
           :data="emps"
           style="width: 100%">
-          <el-table-column type="expand">
+          <el-table-column type="expand" >
             <template slot-scope="props">
               <el-form label-position="left" inline class="demo-table-expand">
                 <el-form-item label="小区名称：">
@@ -37,7 +38,7 @@
                  <span>{{ props.row.jsjt3 }}</span>
                 </el-form-item>
                 <el-form-item label="接待人：">
-                  <span>{{ props.row.people }}</span>
+                  <span>{{ props.row.people}}</span>
                 </el-form-item>
                 <el-form-item label="装修/毛坯：">
                   <span>{{ props.row.reno }}</span>
@@ -51,11 +52,10 @@
                 <el-form-item label="看房时间：">
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
+
                 <el-form-item label="成交时间：">
                   <span>{{ props.row.begindate }}</span>
                 </el-form-item>
-
-
               </el-form>
             </template>
           </el-table-column>
@@ -80,7 +80,7 @@
             prop="remarks">
           </el-table-column>
           <el-table-column
-            width="100">
+            width="200">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="showEmp(scope.row,scope.$index)"
@@ -94,126 +94,68 @@
                 size="small">
                 删除
               </el-button>
-            </template>
-          </el-table-column>
-
-        </el-table>
-        <!--
-        <el-table
-          :data="emps"
-          stripe
-          border
-          style="width: 100%">
-          <el-table-column
-            fixed
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-          fixed
-          prop="workid"
-          label="编号"
-          width="100">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="name"
-            label="小区名称"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="idcard"
-          label="房号"
-          width="130">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="gender"
-            label="是否满2"
-            width="60">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="car"
-            label="车库/车位"
-            width="88">
-          </el-table-column>
-
-          <el-table-column
-            fixed
-            prop="email"
-            label="面积"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone"
-            label="接待人"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="reno"
-            label="装修/毛坯"
-            width="70">
-          </el-table-column>
-
-          <el-table-column
-            fixed
-            prop="price"
-            label="价格"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="intr"
-            label="上门/介绍"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="looktime"
-          label="看房时间"
-          width="120">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone2"
-            label="联系方式"
-            width="140">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
-            <template slot-scope="scope">
               <el-button
-                @click.native.prevent="showEmp(scope.row,scope.$index)"
+                @click.native.prevent="getImg(scope.row,scope.$index)"
                 type="text"
                 size="small">
-                编辑
-              </el-button>
-              <el-button
-                @click.native.prevent="deleteEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
-                删除
+                上传图片
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <div style="display: flex;justify-content: flex-end">
-          <el-pagination
-            background
-            @current-change="currentChange"
-            @size-change="sizeChange"
-            layout="sizes, prev, pager, next, jumper, ->, total, slot"
-            :total="total">
-          </el-pagination>
-        </div>
-        -->
+
       </div>
+
+
+
+<!--      <el-dialog-->
+<!--        title="上传图片"-->
+<!--        :visible.sync="dialogImgVisible"-->
+<!--        width="30%">-->
+<!--        <el-upload-->
+<!--          class="upload-demo"-->
+<!--          action="/employee/basic/img/"-->
+<!--          :on-preview="handlePreview"-->
+<!--          :on-remove="handleRemove"-->
+<!--          :before-remove="beforeRemove"-->
+<!--          :on-success="(response, file, fileList)=>uploadSuccess(response, file, fileList)"-->
+<!--          multiple-->
+<!--          :file-list="this.dialogImageUrl">-->
+<!--          <el-button size="small" type="primary">点击上传</el-button>-->
+<!--          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>-->
+<!--        </el-upload>-->
+
+
+<!--        <span slot="footer" class="dialog-footer">-->
+<!--    <el-button @click="dialogImgVisible = false">取 消</el-button>-->
+<!--    <el-button type="primary" @click="dialogImgVisible = false">确 定</el-button>-->
+<!--  </span>-->
+<!--      </el-dialog>-->
+      <el-dialog
+        :title="title"
+        :visible.sync="dialogUploadVisible"
+        width="70%"
+        @close='closeDialog'>
+      <el-upload
+        action="/employee/basic/img/"
+        accept="image/png, image/jpeg"
+        list-type="picture-card"
+        :file-list='this.imgSrcs'
+        :before-upload="beforeUploadPicture"
+        :on-preview="handlePictureCardPreview"
+        :on-progress="uploadProgress"
+        :on-success="uploadSuccess"
+        :on-error="uploadError"
+        :before-remove="beforeRemove"
+        :on-remove="handleRemove"
+        :show-file-list="true">
+        <i class="el-icon-plus"></i>
+      </el-upload>
+      <el-dialog :visible.sync="dialogImageVisible">
+        <el-image :lazy="true"  width="100%" :src="dialogImageUrl" alt=""/>
+      </el-dialog>
+      </el-dialog>
+
       <el-dialog
         :title="title"
         :visible.sync="dialogVisible"
@@ -231,7 +173,7 @@
                   <el-input  style="width:200px" placeholder="请输入房号" v-model="emp.idcard"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
+              <el-col :span="7">
                 <el-form-item label="面积：" prop="email">
                   <el-input  style="width:150px" placeholder="请输入面积" v-model="emp.email"></el-input>
                 </el-form-item>
@@ -253,6 +195,7 @@
                 </el-form-item>
               </el-col>
 
+
               <el-col :span="8">
                 <el-form-item label="接待人：" prop="people">
                   <el-input  style="width:150px" placeholder="请输入接待人" v-model="emp.people"></el-input>
@@ -263,7 +206,8 @@
             <el-row :gutter="20">
             <el-col :span="8">
             <el-form-item label="车库车位：" prop="car">
-              <el-input  style="width:150px" placeholder="有无车位/车库面积" v-model="emp.car"></el-input>
+              <el-input  style="width:150px" placeholder="有无车位/车库面积" v-model="emp.car">
+              </el-input>
             </el-form-item>
           </el-col>
               <el-col :span="8">
@@ -375,64 +319,6 @@
                 </el-form-item>
               </el-col>
             </el-row>
-         <!--   <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="所属部门：" prop="departmentid">
-                  <el-popover
-                    placement="right"
-                    title="请选择部门"
-                    width="200"
-                    trigger="manual"
-                    v-model="visible">
-                    <el-tree default-expand-all :data="allDeps" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-                    <div slot="reference" style="width: 200px;display: inline-flex;font-size: 13px;border: 1px solid #dedede;height: 35px;border-radius: 5px;
-                  cursor: pointer;align-items: center;padding-left: 8px" @click="showDepView">{{inputDepName}}</div>
-                  </el-popover>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职称：" prop="joblevelid">
-                  <el-select v-model="emp.joblevelid" placeholder="请选择">
-                    <el-option
-                      v-for="item in joblevels"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职位：" prop="posid">
-                  <el-select v-model="emp.posid" placeholder="请选择">
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="入职日期：" prop="begindate">
-                  <el-date-picker
-                    v-model="emp.begindate"
-                    style="width: 200px"
-                    type="date"
-                    value-format="yyyy-MM-dd"
-                    placeholder="选择日期">
-                  </el-date-picker>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="工号：" prop="workid">
-                  <el-input  style="width:150px" v-model="emp.workid" disabled></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>-->
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -444,6 +330,7 @@
 </template>
 
 <style>
+
 .demo-table-expand {
   font-size: 0;
 }
@@ -463,6 +350,8 @@
     name: 'EmpBasic',
     data(){
       return{
+        dialogImageUrl: [],
+        imgSrcs:[],
         options4: [{
           value: '未出售',
           label: '未出售'
@@ -568,9 +457,13 @@
         inputDepName:'',
         allDeps:[],
         visible:false,
+        dialogImageVisible:false,
+        dialogUploadVisible:false,
         dialogVisible:false,
         emps:[{
         }],
+        rowa:"",
+        urls:[],
         keyword:'',
         total:0,
         page:1,
@@ -583,7 +476,7 @@
           birthday:"",
           idcard:"",
           email:"",
-          phone:"",
+          people:"",
           phone2:"",
           departmentid:null,
           joblevelid:null,
@@ -599,7 +492,13 @@
           jsjt1:"",
           jsjt2:"",
           jsjt3:"",
+          xingz:"",
           remarks:"",
+          imgpaths:[{}],
+        },
+        imgpath:{
+          workid:"",
+          imagepath:"",
         },
         defaultProps: {
           children: 'children',
@@ -612,22 +511,94 @@
           intr:[{required:true,message:'请输入',trigger:'blur'}],
           idcard:[{required:true,message:'请输入房号',trigger:'blur'}],
           email:[{required:true,message:'请输入面积',trigger:'blur'}],
-          phone:[{required:true,message:'请输入接待人',trigger:'blur'}],
+          people:[{required:true,message:'请输入接待人',trigger:'blur'}],
           phone2:[{required:true,message:'请输入联系方式',trigger:'blur'}],
           price:[{required:true,message:'请输入价格',trigger:'blur'}],
           car:[{required:true,message:'请输入车位/车库',trigger:'blur'}],
           jsjt1:[{required:true,message:'请输入几室',trigger:'blur'}],
           jsjt2:[{required:true,message:'请输入几厅',trigger:'blur'}],
           jsjt3:[{required:true,message:'请输入几卫',trigger:'blur'}],
+          xingz:[{required:true,message:'公司/中介房源',trigger:'blur'}],
         }
 
       }
     },
+
+
    mounted(){
       this.initEmps();
-      this.initData();
     },
     methods:{
+      // setRow(row, event, column){
+      //   console.log(row, event, column);
+      //   this.rowa = row.workid;
+      // },
+
+      getImg(row){
+        console.log(row);
+        this.rowa = row.workid;
+        this.getRequest("/employee/basic/getImg/?workid="+this.rowa).then(res=> {
+
+            console.log(res);
+            this.imgpaths = res.data;
+            console.log(this.imgpaths);
+            for(let i=0;i<this.imgpaths.length;i++){
+              const imgSrc = {
+                name:"",
+                url:"",
+              }
+              imgSrc.name = this.imgpaths[i].id;
+              imgSrc.url= "../../static"+this.imgpaths[i].imagepath;
+              this.imgSrcs.push(imgSrc);
+            }
+
+            console.log(this.imgSrcs);
+            this.dialogUploadVisible = true;
+        })
+
+
+      },
+      closeDialog(){
+          this.imgSrcs=[];
+          this.dialogUploadVisible=false;
+
+      },
+      handleRemove(file, fileList) {
+        this.deleteRequest("/employee/basic/deleteImg/"+file.name)
+        console.log(file, fileList);
+      },
+      uploadSuccess(response, file, fileList) {
+          console.log(response);
+          console.log(this.rowa);
+          this.imgpath.imagepath = response;
+          this.imgpath.workid = this.rowa;
+          this.postRequest("/employee/basic/addImg",this.imgpath)
+        },
+
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+
+      beforeUploadPicture(file) {
+        if(file.size > 10*1024*1024){
+          this.$message.error("上传图片不能大于10M");
+          return false;
+        }
+      },
+      // handleRemove(file, fileList) {
+      //   console.log(file, fileList);
+      // },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+
+        this.dialogImageVisible = true;
+      },
+      uploadProgress(event,file, fileList){
+
+      },
+      // uploadError(err, file, fileList) {
+      //   this.$message.error("上传出错");
+      // },
       emptyEmp(){
         this.emp={
           name:"",
@@ -635,7 +606,7 @@
           birthday:"",
           idcard:"",
           email:"",
-          phone:"",
+          people:"",
           phone2:"",
           begindate:"",
           workid:"",
@@ -648,7 +619,9 @@
           jsjt1:"",
           jsjt2:"",
           jsjt3:"",
+          xingz:"",
           remarks:"",
+          imagepath:"",
         }
       },
  doAddEmp(){
@@ -697,9 +670,11 @@
       },
       showAddEmpView(){
         this.title="添加房源"
+        if(this.$refs['empForm']!=undefined){
+          this.$refs['empForm'].resetFields()
+        }
         this.emptyEmp();
         this.getMaxWorkID();
-        this.$refs[empForm].resetFields();
         this.dialogVisible=true;
       },
       deleteEmp(row){
@@ -722,6 +697,9 @@
       },
       showEmp(row){
         this.title='编辑房源信息';
+        if(this.$refs['empForm']!=undefined){
+          this.$refs['empForm'].resetFields()
+        }
         this.emp=row;
         this.dialogVisible=true;
       }

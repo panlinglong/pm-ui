@@ -85,7 +85,7 @@
             prop="remarks">
           </el-table-column>
           <el-table-column
-            width="100">
+            width="200">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="showChuzu(scope.row,scope.$index)"
@@ -99,125 +99,43 @@
                 size="small">
                 删除
               </el-button>
+              <el-button
+                @click.native.prevent="getImg(scope.row,scope.$index)"
+                type="text"
+                size="small">
+                查看图片
+              </el-button>
             </template>
           </el-table-column>
 
         </el-table>
-        <!--
-        <el-table
-          :data="emps"
-          stripe
-          border
-          style="width: 100%">
-          <el-table-column
-            fixed
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-          fixed
-          prop="workid"
-          label="编号"
-          width="100">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="name"
-            label="小区名称"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="idcard"
-          label="房号"
-          width="130">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="gender"
-            label="是否满2"
-            width="60">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="car"
-            label="车库/车位"
-            width="88">
-          </el-table-column>
 
-          <el-table-column
-            fixed
-            prop="email"
-            label="面积"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone"
-            label="接待人"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="reno"
-            label="装修/毛坯"
-            width="70">
-          </el-table-column>
+        <el-dialog
+          :title="title"
+          :visible.sync="dialogUploadVisible"
+          width="70%"
+          @close='closeDialog'>
+          <el-upload
+            action="/employee/basic/img/"
+            accept="image/png, image/jpeg"
+            list-type="picture-card"
+            :file-list='this.imgSrcs'
+            :before-upload="beforeUploadPicture"
+            :on-preview="handlePictureCardPreview"
+            :on-progress="uploadProgress"
+            :on-success="uploadSuccess"
+            :on-error="uploadError"
+            :before-remove="beforeRemove"
+            :on-remove="handleRemove"
+            :show-file-list="true">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogImageVisible">
+            <el-image :lazy="true"  width="100%" :src="dialogImageUrl" alt=""/>
+          </el-dialog>
+        </el-dialog>
 
-          <el-table-column
-            fixed
-            prop="price"
-            label="价格"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="intr"
-            label="上门/介绍"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="looktime"
-          label="看房时间"
-          width="120">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone2"
-            label="联系方式"
-            width="140">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
-            <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="showEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
-                编辑
-              </el-button>
-              <el-button
-                @click.native.prevent="deleteEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div style="display: flex;justify-content: flex-end">
-          <el-pagination
-            background
-            @current-change="currentChange"
-            @size-change="sizeChange"
-            layout="sizes, prev, pager, next, jumper, ->, total, slot"
-            :total="total">
-          </el-pagination>
-        </div>
-        -->
+
       </div>
       <el-dialog
         :title="title"
@@ -394,64 +312,7 @@
               </el-col>
 
             </el-row>
-         <!--   <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="所属部门：" prop="departmentid">
-                  <el-popover
-                    placement="right"
-                    title="请选择部门"
-                    width="200"
-                    trigger="manual"
-                    v-model="visible">
-                    <el-tree default-expand-all :data="allDeps" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-                    <div slot="reference" style="width: 200px;display: inline-flex;font-size: 13px;border: 1px solid #dedede;height: 35px;border-radius: 5px;
-                  cursor: pointer;align-items: center;padding-left: 8px" @click="showDepView">{{inputDepName}}</div>
-                  </el-popover>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职称：" prop="joblevelid">
-                  <el-select v-model="emp.joblevelid" placeholder="请选择">
-                    <el-option
-                      v-for="item in joblevels"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职位：" prop="posid">
-                  <el-select v-model="emp.posid" placeholder="请选择">
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="入职日期：" prop="begindate">
-                  <el-date-picker
-                    v-model="emp.begindate"
-                    style="width: 200px"
-                    type="date"
-                    value-format="yyyy-MM-dd"
-                    placeholder="选择日期">
-                  </el-date-picker>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="工号：" prop="workid">
-                  <el-input  style="width:150px" v-model="emp.workid" disabled></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>-->
+
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -482,6 +343,8 @@
     name: 'ChuzuBasic',
     data(){
       return{
+        dialogImageUrl: [],
+        imgSrcs:[],
         options4: [{
           value: '未出租',
           label: '未出租'
@@ -588,6 +451,8 @@
         allDeps:[],
         visible:false,
         dialogVisible:false,
+        dialogImageVisible:false,
+        dialogUploadVisible:false,
         chuzus:[{
         }],
         keyword:'',
@@ -596,31 +461,36 @@
         size:10,
         joblevels:[],
         positions:[],
-        chuzu:{
-          name:"",
-          fangs:"",
-          birthday:"",
-          idcard:"",
-          email:"",
-          people:"",
-          phone2:"",
-          departmentid:null,
-          joblevelid:null,
-          posid:null,
-          begindate:"",
+        chuzu: {
+          name: "",
+          fangs: "",
+          birthday: "",
+          idcard: "",
+          email: "",
+          people: "",
+          phone2: "",
+          departmentid: null,
+          joblevelid: null,
+          posid: null,
+          begindate: "",
+          workid: "",
+          car: "",
+          reno: "",
+          price: "",
+          looktime: "",
+          intr: "",
+          xuequ: "",
+          jsjt1: "",
+          jsjt2: "",
+          jsjt3: "",
+          xingz: "",
+          remarks: "",
+          endDate: "",
+        },
+          imgpaths:[{}],
+        imgpath:{
           workid:"",
-          car:"",
-          reno:"",
-          price:"",
-          looktime:"",
-          intr:"",
-          xuequ:"",
-          jsjt1:"",
-          jsjt2:"",
-          jsjt3:"",
-          xingz:"",
-          remarks:"",
-          endDate:"",
+          imagepath:"",
         },
         defaultProps: {
           children: 'children',
@@ -675,6 +545,65 @@
           remarks:"",
           endDate:"",
         }
+      },
+      getImg(row){
+        console.log(row);
+        this.rowa = row.workid;
+        this.getRequest("/employee/basic/getImg/?workid="+this.rowa).then(res=> {
+
+          console.log(res);
+          this.imgpaths = res.data;
+          console.log(this.imgpaths);
+          for(let i=0;i<this.imgpaths.length;i++){
+            const imgSrc = {
+              name:"",
+              url:"",
+            }
+            imgSrc.name = this.imgpaths[i].id;
+            imgSrc.url= "../../static"+this.imgpaths[i].imagepath;
+            this.imgSrcs.push(imgSrc);
+          }
+
+          console.log(this.imgSrcs);
+          this.dialogUploadVisible = true;
+        })
+
+
+      },
+      closeDialog(){
+        this.imgSrcs=[];
+        this.dialogUploadVisible=false;
+
+      },
+      handleRemove(file, fileList) {
+        this.deleteRequest("/employee/basic/deleteImg/"+file.name)
+        console.log(file, fileList);
+      },
+      uploadSuccess(response, file, fileList) {
+        console.log(response);
+        console.log(this.rowa);
+        this.imgpath.imagepath = response;
+        this.imgpath.workid = this.rowa;
+        this.postRequest("/employee/basic/addImg",this.imgpath)
+      },
+
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+
+      beforeUploadPicture(file) {
+        if(file.size > 10*1024*1024){
+          this.$message.error("上传图片不能大于10M");
+          return false;
+        }
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+
+        this.dialogImageVisible = true;
+      },
+      uploadProgress(event,file, fileList){
+
       },
  doAddChuzu(){
         if (this.chuzu.id){
