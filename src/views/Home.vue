@@ -1,8 +1,30 @@
 <template>
+
     <div>
+      <el-dialog
+        :title="title"
+        :visible.sync="dialogPwVisible"
+        width="40%">
+
+          <el-row >
+            <el-col span="10"> <span>请输入新密码：</span>
+              <el-input  style="width:150px" placeholder="请输入新密码" v-model="newPw" show-password></el-input>
+            </el-col>
+
+          </el-row>
+            <el-row>
+              <el-col span="10">
+              <span>请确认新密码：</span>
+            <el-input  style="width:150px" placeholder="请输入新密码" v-model="newPw1" show-password></el-input>
+              </el-col>
+            </el-row>
+        <el-button @click="dochange()">确定</el-button>
+      </el-dialog>
+
       <el-container>
         <el-header class="homeHeader">
           <div class="title">楼阿姨卖房</div>
+          <div>
           <el-dropdown class="userInfo" @command="commandHandler">
   <span class="el-dropdown-link">
     {{user.name}}
@@ -11,6 +33,8 @@
               <el-dropdown-item command="logout">注销登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
+            <el-button @click="changePw" type="success" plain>修改密码</el-button>
+          </div>
         </el-header>
         <el-container>
           <el-aside width="200px">
@@ -124,13 +148,26 @@
         </el-container>
       </el-container>
     </div>
-</template>
 
+
+
+
+</template>
 <script>
+  import {putRequest} from "../utils/api";
+
   export default {
     name: 'Home',
     data(){
       return{
+        title:"修改密码",
+        newPw:"",
+        newPw1:"",
+        hr:{
+          password:"",
+          id:"",
+        },
+        dialogPwVisible:false,
         chuzus:[{
       }],
         chuzu:{
@@ -191,7 +228,28 @@
               });
             });
           }
+
         },
+      changePw(){
+          this.dialogPwVisible = true;
+      },
+      dochange(){
+        console.log(this.user.id);
+        if(this.newPw){
+          if(this.newPw==this.newPw1){
+            this.hr.id=this.user.id;
+            this.hr.password=this.newPw;
+            console.log(this.hr.id);
+            console.log(this.hr.password);
+            putRequest("/system/basic/hr/changpw/",this.hr);
+            this.$confirm("修改成功");
+            this.dialogPwVisible = false;
+          }else{
+            this.$confirm("两次输入的密码不相同")
+          }
+        }
+
+      },
       initChuzus(){
         this.getRequest("/chuzu/basic/endtime/").then(res=>{
           if (res){
@@ -215,7 +273,7 @@
 
   }
   .homeHeader{
-    background-color: cornflowerblue;
+    background-color: #6abfb4;
     display: flex;
     /*竖直居中*/
     align-items: center;

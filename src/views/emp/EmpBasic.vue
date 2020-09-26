@@ -77,10 +77,7 @@
             label="状态："
             prop="xingz">
           </el-table-column>
-          <el-table-column
-            label="备注："
-            prop="remarks">
-          </el-table-column>
+
           <el-table-column
             width="200">
             <template slot-scope="scope">

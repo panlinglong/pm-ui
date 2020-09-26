@@ -166,10 +166,7 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="付款方式：" prop="fangs">
-                  <el-radio-group v-model="chuzu.fangs">
-                    <el-radio label="是">是</el-radio>
-                    <el-radio label="否">否</el-radio>
-                  </el-radio-group>
+                  <el-input  style="width:150px" placeholder="请输入付款方式" v-model="chuzu.fangs"></el-input>
                 </el-form-item>
               </el-col>
 

@@ -64,7 +64,6 @@
                 active-text="启用"
                 inactive-text="禁用">
               </el-switch>
-
               </div>
               <div>用户角色：<el-tag type="success" style="margin-right: 4px" v-for="(role,index) in hr.roles" :key="index">{{role.nameZh}}</el-tag><el-popover
                 placement="right"
@@ -85,13 +84,11 @@
               </el-popover>
                 </div>
               <div>备注：{{hr.remark}}</div>
-
                 <el-button
-                  @click.native.prevent="showHr"
+                  @click="showHr(hr)"
                   type="primary">
                   编辑
                 </el-button>
-
             </div>
 
           </div>
@@ -206,12 +203,13 @@
         this.emptyHr();
         this.dialogVisible=true;
       },
-      showHr(row){
+      showHr(hr){
+        console.log(hr)
         this.title='编辑员工信息';
         if(this.$refs['hrForm']!=undefined){
           this.$refs['hrForm'].resetFields()
         }
-        this.hr=row;
+        this.hr=hr;
         this.dialogVisible=true;
       },
       enabledChange(hr){
