@@ -52,7 +52,7 @@
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
                 <el-form-item label="联系方式：">
-                  <span>{{ props.row.phone2 }}</span>
+                  <el-button type="text" @click="getphone(props.row)">查看联系方式</el-button>
                 </el-form-item>
                 <el-form-item label="起租时间：">
                   <span>{{ props.row.begindate }}</span>
@@ -79,6 +79,10 @@
           <el-table-column
             label="状态："
             prop="xingz">
+          </el-table-column>
+          <el-table-column
+            label="上传者："
+            prop="upname">
           </el-table-column>
           <el-table-column
             label="备注："
@@ -109,6 +113,13 @@
           </el-table-column>
 
         </el-table>
+
+        <el-dialog
+          :title="title"
+          :visible.sync="dialogPhoneVisible"
+          width="30%">
+          <span>{{this.getPhone}}</span>
+        </el-dialog>
 
         <el-dialog
           :title="title"
@@ -280,8 +291,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="备注：" prop="remarks">
-                  <el-input  style="width:200px"  v-model="chuzu.remarks"></el-input>
+                <el-form-item label="上传者：" prop="upname">
+                  <el-input  style="width:150px"  v-model="chuzu.upname" disabled></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -308,7 +319,11 @@
                   </el-date-picker>
                 </el-form-item>
               </el-col>
-
+              <el-col :span="8">
+                <el-form-item label="备注：" prop="remarks">
+                  <el-input  style="width:200px"  v-model="chuzu.remarks"></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
 
           </el-form>
@@ -342,6 +357,8 @@
     data(){
       return{
         dialogImageUrl: [],
+        dialogPhoneVisible:false,
+        getPhone:"",
         imgSrcs:[],
         options4: [{
           value: '未出租',
@@ -484,8 +501,12 @@
           xingz: "",
           remarks: "",
           endDate: "",
+          payDate:"",
+          alarmDate:"",
+          upname:"",
         },
-          imgpaths:[{}],
+        user:JSON.parse(window.sessionStorage.getItem("user")),
+        imgpaths:[{}],
         imgpath:{
           workid:"",
           imagepath:"",
@@ -542,6 +563,9 @@
           xingz:"",
           remarks:"",
           endDate:"",
+          payDate:"",
+          alarmDate:"",
+          upname:"",
         }
       },
       getImg(row){
@@ -567,6 +591,17 @@
         })
 
 
+      },
+      getphone(row){
+        console.log(this.user.roles);
+        console.log(this.user.roles[0].id);
+        if(this.user.roles[0].id=="6"||this.user.roles[0].id=="3"||this.user.roles[0].id=="1"){
+          this.getPhone = row.phone2;
+          console.log(this.getPhone);
+          this.dialogPhoneVisible = true;
+        }else{
+          this.$confirm("无权查看");
+        }
       },
       closeDialog(){
         this.imgSrcs=[];
@@ -603,7 +638,8 @@
       uploadProgress(event,file, fileList){
 
       },
- doAddChuzu(){
+ doAddChuzu(user){
+        console.log(this.user.name)
         if (this.chuzu.id){
           this.$refs['chuzuForm'].validate(valid=>{
             if (valid){
@@ -616,6 +652,7 @@
         }else {
           this.$refs['chuzuForm'].validate(valid=>{
             if (valid){
+              this.chuzu.upname=this.user.name;
               this.postRequest("/chuzu/basic/",this.chuzu).then(res=>{
                 this.dialogVisible = false;
                 this.initChuzus();
@@ -657,27 +694,48 @@
         this.dialogVisible=true;
       },
       deleteChuzu(row){
-        this.$confirm('此操作将永久删除【'+row.name+'】房源, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteRequest("/chuzu/basic/"+row.id).then(res=>{
-            if (res){
-              this.initChuzus();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+        console.log(this.user.name);
+        console.log(row.upname);
+        if(row.upname!=this.user.name&&this.user.name!="管理员"&&this.user.name!="系统管理员"){
+          this.$confirm("非上传者无法删除");
+        }else{
+          this.$confirm('此操作将永久删除【'+row.name+'】房源, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.deleteRequest("/chuzu/basic/"+row.id).then(res=>{
+              if (res){
+                this.initChuzus();
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
-        });
+        }
       },
       showChuzu(row){
-        this.title='编辑房源信息';
-        this.chuzu=row;
-        this.dialogVisible=true;
+        console.log(row.upname);
+        console.log(this.user.name);
+        if(row.upname==this.user.name){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="管理员"){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="系统管理员"){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else{
+          this.$confirm("非上传者无法编辑");
+        }
+
       }
     }
   }

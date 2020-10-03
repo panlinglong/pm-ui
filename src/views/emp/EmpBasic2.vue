@@ -52,7 +52,6 @@
                 <el-form-item label="看房时间：">
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
-
                 <el-form-item label="成交时间：">
                   <span>{{ props.row.begindate }}</span>
                 </el-form-item>
@@ -75,10 +74,7 @@
             label="状态："
             prop="xingz">
           </el-table-column>
-          <el-table-column
-            label="备注："
-            prop="remarks">
-          </el-table-column>
+
           <el-table-column
             width="200">
             <template slot-scope="scope">
@@ -98,7 +94,7 @@
                 @click.native.prevent="getImg(scope.row,scope.$index)"
                 type="text"
                 size="small">
-                上传图片
+                查看图片
               </el-button>
             </template>
           </el-table-column>
@@ -466,6 +462,7 @@
         urls:[],
         keyword:'',
         total:0,
+        user:JSON.parse(window.sessionStorage.getItem("user")),
         page:1,
         size:10,
         joblevels:[],

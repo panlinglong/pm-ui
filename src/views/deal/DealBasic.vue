@@ -44,9 +44,10 @@
                 <el-form-item label="付款金额：">
                   <span>{{ props.row.price2 }}</span>
                 </el-form-item>
-                <el-form-item label="合同录入：">
+                <el-form-item label="合同录入(文字)：">
                   <span>{{ props.row.details }}</span>
                 </el-form-item>
+
 
               </el-form>
             </template>
@@ -72,7 +73,7 @@
             prop="beginDate">
           </el-table-column>
           <el-table-column
-            width="100">
+            width="200">
             <template slot-scope="scope">
               <el-button
                 @click.native.prevent="showEmpdeal(scope.row,scope.$index)"
@@ -86,125 +87,17 @@
                 size="small">
                 删除
               </el-button>
+              <el-button
+                @click.native.prevent="getImg(scope.row,scope.$index)"
+                type="text"
+                size="small">
+                合同录入（图片）
+              </el-button>
             </template>
           </el-table-column>
 
         </el-table>
-        <!--
-        <el-table
-          :data="emps"
-          stripe
-          border
-          style="width: 100%">
-          <el-table-column
-            fixed
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-          fixed
-          prop="workid"
-          label="编号"
-          width="100">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="name"
-            label="小区名称"
-            width="120">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="idcard"
-          label="房号"
-          width="130">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="gender"
-            label="是否满2"
-            width="60">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="car"
-            label="车库/车位"
-            width="88">
-          </el-table-column>
 
-          <el-table-column
-            fixed
-            prop="email"
-            label="面积"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone"
-            label="接待人"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="reno"
-            label="装修/毛坯"
-            width="70">
-          </el-table-column>
-
-          <el-table-column
-            fixed
-            prop="price"
-            label="价格"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-            prop="intr"
-            label="上门/介绍"
-            width="70">
-          </el-table-column>
-          <el-table-column
-            fixed
-          prop="looktime"
-          label="看房时间"
-          width="120">
-        </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone2"
-            label="联系方式"
-            width="140">
-          </el-table-column>
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
-            <template slot-scope="scope">
-              <el-button
-                @click.native.prevent="showEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
-                编辑
-              </el-button>
-              <el-button
-                @click.native.prevent="deleteEmp(scope.row,scope.$index)"
-                type="text"
-                size="small">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div style="display: flex;justify-content: flex-end">
-          <el-pagination
-            background
-            @current-change="currentChange"
-            @size-change="sizeChange"
-            layout="sizes, prev, pager, next, jumper, ->, total, slot"
-            :total="total">
-          </el-pagination>
-        </div>
-        -->
       </div>
       <el-dialog
         :title="title"
@@ -388,6 +281,14 @@
     name: 'EmpdealBasic',
     data(){
       return{
+        rowa:"",
+        upnames:"",
+        urls:[],
+        user:JSON.parse(window.sessionStorage.getItem("user")),
+        imgSrcs:[],
+        uploadDisabled:false,
+        dialogImageUrl: [],
+        dialogImageVisible:false,
         title:'',
         inputDepName:'',
         allDeps:[],

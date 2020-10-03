@@ -78,6 +78,10 @@
             prop="xingz">
           </el-table-column>
           <el-table-column
+            label="上传者："
+            prop="upname">
+          </el-table-column>
+          <el-table-column
             label="备注："
             prop="remarks">
           </el-table-column>
@@ -166,7 +170,8 @@
               </el-col>
               <el-col :span="8">
                 <el-form-item label="付款方式：" prop="fangs">
-                  <el-input  style="width:150px" placeholder="请输入付款方式" v-model="chuzu.fangs"></el-input>
+                    <el-input  style="width:150px" placeholder="请输入付款方式" v-model="chuzu.fangs"></el-input>
+
                 </el-form-item>
               </el-col>
 
@@ -276,8 +281,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="备注：" prop="remarks">
-                  <el-input  style="width:200px"  v-model="chuzu.remarks"></el-input>
+                <el-form-item label="上传者：" prop="upname">
+                  <el-input  style="width:150px"  v-model="chuzu.upname" disabled></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -304,7 +309,11 @@
                   </el-date-picker>
                 </el-form-item>
               </el-col>
-
+              <el-col :span="8">
+                <el-form-item label="备注：" prop="remarks">
+                  <el-input  style="width:200px"  v-model="chuzu.remarks"></el-input>
+                </el-form-item>
+              </el-col>
             </el-row>
 
           </el-form>
@@ -480,8 +489,12 @@
           xingz: "",
           remarks: "",
           endDate: "",
+          payDate:"",
+          alarmDate:"",
+          upname:"",
         },
-          imgpaths:[{}],
+        user:JSON.parse(window.sessionStorage.getItem("user")),
+        imgpaths:[{}],
         imgpath:{
           workid:"",
           imagepath:"",
@@ -538,6 +551,9 @@
           xingz:"",
           remarks:"",
           endDate:"",
+          payDate:"",
+          alarmDate:"",
+          upname:"",
         }
       },
       getImg(row){
@@ -599,7 +615,8 @@
       uploadProgress(event,file, fileList){
 
       },
- doAddChuzu(){
+ doAddChuzu(user){
+        console.log(this.user.name)
         if (this.chuzu.id){
           this.$refs['chuzuForm'].validate(valid=>{
             if (valid){
@@ -612,6 +629,7 @@
         }else {
           this.$refs['chuzuForm'].validate(valid=>{
             if (valid){
+              this.chuzu.upname=this.user.name;
               this.postRequest("/chuzu/basic/",this.chuzu).then(res=>{
                 this.dialogVisible = false;
                 this.initChuzus();
@@ -653,6 +671,11 @@
         this.dialogVisible=true;
       },
       deleteChuzu(row){
+        console.log(this.user.name);
+        console.log(row.upname);
+        if(row.upname!=this.user.name&&this.user.name!="管理员"&&this.user.name!="系统管理员"){
+          this.$confirm("非上传者无法删除");
+        }else{
         this.$confirm('此操作将永久删除【'+row.name+'】房源, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -669,11 +692,27 @@
             message: '已取消删除'
           });
         });
-      },
+      }
+        },
       showChuzu(row){
-        this.title='编辑房源信息';
-        this.chuzu=row;
-        this.dialogVisible=true;
+        console.log(row.upname);
+        console.log(this.user.name);
+        if(row.upname==this.user.name){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="管理员"){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="系统管理员"){
+          this.title='编辑房源信息';
+          this.chuzu=row;
+          this.dialogVisible=true;
+        }else{
+          this.$confirm("非上传者无法编辑");
+        }
+
       }
     }
   }

@@ -53,7 +53,9 @@
                   <span>{{ props.row.looktime }}</span>
                 </el-form-item>
                 <el-form-item label="联系方式：">
-                  <span>{{ props.row.phone2 }}</span>
+                  <span>
+                    <el-button type="text" @click="getphone(props.row)">查看联系方式</el-button>
+                  </span>
                 </el-form-item>
                 <el-form-item label="成交时间：">
                   <span>{{ props.row.begindate }}</span>
@@ -72,6 +74,10 @@
           <el-table-column
             label="房号"
             prop="idcard">
+          </el-table-column>
+          <el-table-column
+            label="上传者"
+            prop="upname">
           </el-table-column>
           <el-table-column
             label="状态："
@@ -144,9 +150,11 @@
         :on-preview="handlePictureCardPreview"
         :on-progress="uploadProgress"
         :on-success="uploadSuccess"
+        :on-change="uploadLimit"
         :on-error="uploadError"
         :before-remove="beforeRemove"
         :on-remove="handleRemove"
+        :class="{disabled:uploadDisabled}"
         :show-file-list="true">
         <i class="el-icon-plus"></i>
       </el-upload>
@@ -154,6 +162,14 @@
         <el-image :lazy="true"  width="100%" :src="dialogImageUrl" alt=""/>
       </el-dialog>
       </el-dialog>
+
+      <el-dialog
+        :title="title"
+        :visible.sync="dialogPhoneVisible"
+        width="30%">
+        <span>{{this.getPhone}}</span>
+      </el-dialog>
+
 
       <el-dialog
         :title="title"
@@ -318,6 +334,13 @@
                 </el-form-item>
               </el-col>
             </el-row>
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="上传者：" prop="upname">
+                  <el-input  style="width:150px"  v-model="emp.upname" disabled></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -342,6 +365,9 @@
   margin-bottom: 0;
   width: 50%;
 }
+.disabled .el-upload--picture-card {
+  display: none!important;
+}
 </style>
 
 <script>
@@ -349,7 +375,9 @@
     name: 'EmpBasic',
     data(){
       return{
+        uploadDisabled:false,
         dialogImageUrl: [],
+        getPhone:"",
         imgSrcs:[],
         options4: [{
           value: '未出售',
@@ -453,15 +481,18 @@
           label: '10室'
         }],
         title:'',
+        user:JSON.parse(window.sessionStorage.getItem("user")),
         inputDepName:'',
         allDeps:[],
         visible:false,
         dialogImageVisible:false,
         dialogUploadVisible:false,
         dialogVisible:false,
+        dialogPhoneVisible:false,
         emps:[{
         }],
         rowa:"",
+        upnames:"",
         urls:[],
         keyword:'',
         total:0,
@@ -469,6 +500,8 @@
         size:10,
         joblevels:[],
         positions:[],
+        rolename:[],
+        rolenames:"",
         emp:{
           name:"",
           gender:"",
@@ -494,6 +527,7 @@
           xingz:"",
           remarks:"",
           imgpaths:[{}],
+          upname:"",
         },
         imgpath:{
           workid:"",
@@ -532,10 +566,21 @@
       //   console.log(row, event, column);
       //   this.rowa = row.workid;
       // },
-
+      getphone(row){
+        console.log(this.user.roles);
+        console.log(this.user.roles[0].id);
+        if(this.user.roles[0].id=="6"||this.user.roles[0].id=="3"||this.user.roles[0].id=="1"){
+          this.getPhone = row.phone2;
+          console.log(this.getPhone);
+          this.dialogPhoneVisible = true;
+        }else{
+          this.$confirm("无权查看");
+        }
+      },
       getImg(row){
         console.log(row);
         this.rowa = row.workid;
+        this.upnames = row.upname;
         this.getRequest("/employee/basic/getImg/?workid="+this.rowa).then(res=> {
 
             console.log(res);
@@ -563,19 +608,37 @@
 
       },
       handleRemove(file, fileList) {
-        this.deleteRequest("/employee/basic/deleteImg/"+file.name)
-        console.log(file, fileList);
+        if(this.user.name==this.upnames||this.user.roles[0].id==3||this.user.roles[0].id==6){
+          this.deleteRequest("/employee/basic/deleteImg/"+file.name)
+          console.log(file, fileList);
+        }else{
+          this.$confirm("非上传者无权删除图片，刷新后再次出现");
+        }
+
       },
       uploadSuccess(response, file, fileList) {
           console.log(response);
           console.log(this.rowa);
+        if(this.user.name==this.upnames||this.user.roles[0].id==3||this.user.roles[0].id==6){
           this.imgpath.imagepath = response;
           this.imgpath.workid = this.rowa;
           this.postRequest("/employee/basic/addImg",this.imgpath)
-        },
-
+        }else{
+          this.$confirm("非上传者无权上传图片，刷新后恢复");
+        }
+        }
+        ,
+      uploadLimit(file,fileList){
+        console.log(this.upnames);
+        console.log(this.user.name);
+        if(this.upnames!=this.user.name){
+          this.uploadDisabled = true;
+        }
+      },
       beforeRemove(file, fileList) {
+
         return this.$confirm(`确定移除 ${ file.name }？`);
+
       },
 
       beforeUploadPicture(file) {
@@ -588,16 +651,15 @@
       //   console.log(file, fileList);
       // },
       handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
-
-        this.dialogImageVisible = true;
+          this.dialogImageUrl = file.url;
+          this.dialogImageVisible = true;
       },
       uploadProgress(event,file, fileList){
 
       },
-      // uploadError(err, file, fileList) {
-      //   this.$message.error("上传出错");
-      // },
+      uploadError(err, file, fileList) {
+          this.$message.error("上传出错");
+      },
       emptyEmp(){
         this.emp={
           name:"",
@@ -621,9 +683,10 @@
           xingz:"",
           remarks:"",
           imagepath:"",
+          upname:"",
         }
       },
- doAddEmp(){
+ doAddEmp(user){
         if (this.emp.id){
           this.$refs['empForm'].validate(valid=>{
             if (valid){
@@ -636,6 +699,7 @@
         }else {
           this.$refs['empForm'].validate(valid=>{
             if (valid){
+              this.emp.upname=this.user.name;
               this.postRequest("/employee/basic/",this.emp).then(res=>{
                 this.dialogVisible = false;
                 this.initEmps();
@@ -676,31 +740,48 @@
         this.getMaxWorkID();
         this.dialogVisible=true;
       },
-      deleteEmp(row){
-        this.$confirm('此操作将永久删除【'+row.name+'】房源, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteRequest("/employee/basic/"+row.id).then(res=>{
-            if (res){
-              this.initEmps();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+      deleteEmp(row) {
+        console.log(this.user.name);
+        console.log(row.upname);
+        if (row.upname != this.user.name && this.user.name != "管理员" && this.user.name != "系统管理员") {
+          this.$confirm("非上传者无法删除");
+        } else {
+          this.$confirm('此操作将永久删除【' + row.name + '】房源, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.deleteRequest("/employee/basic/" + row.id).then(res => {
+              if (res) {
+                this.initEmps();
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
-        });
+        }
       },
       showEmp(row){
-        this.title='编辑房源信息';
-        if(this.$refs['empForm']!=undefined){
-          this.$refs['empForm'].resetFields()
+        console.log(row.upname);
+        console.log(this.user.name);
+        if(row.upname==this.user.name){
+          this.title='编辑房源信息';
+          this.emp=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="管理员"){
+          this.title='编辑房源信息';
+          this.emp=row;
+          this.dialogVisible=true;
+        }else if(this.user.name=="系统管理员"){
+          this.title='编辑房源信息';
+          this.emp=row;
+          this.dialogVisible=true;
+        }else{
+          this.$confirm("非上传者无法编辑");
         }
-        this.emp=row;
-        this.dialogVisible=true;
       }
     }
   }

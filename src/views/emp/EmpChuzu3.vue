@@ -75,6 +75,10 @@
             prop="idcard">
           </el-table-column>
           <el-table-column
+            label="上传者："
+            prop="upname">
+          </el-table-column>
+          <el-table-column
             label="接待人："
             prop="people">
           </el-table-column>
@@ -620,6 +624,7 @@
           xingz:"",
           remarks:"",
           endDate:"",
+          upname:"",
         },
         defaultProps: {
           children: 'children',
@@ -673,6 +678,7 @@
           xingz:"",
           remarks:"",
           endDate:"",
+          upname:"",
         }
       },
  doAddChuzu(){
