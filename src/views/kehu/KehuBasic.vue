@@ -16,6 +16,9 @@
                 <el-form-item label="客户姓名：">
                   <span>{{ props.row.name }}</span>
                 </el-form-item>
+                <el-form-item label="客户分类：">
+                  <span>{{ props.row.types }}</span>
+                </el-form-item>
                 <el-form-item label="性别：">
                   <span>{{ props.row.gender }}</span>
                 </el-form-item>
@@ -70,6 +73,10 @@
           <el-table-column
             label="客户姓名"
             prop="name">
+          </el-table-column>
+          <el-table-column
+            label="客户分类"
+            prop="types">
           </el-table-column>
           <el-table-column
             label="性别"
@@ -170,6 +177,11 @@
               </el-col>
             </el-row>
             <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="客户分类：" prop="types">
+                  <el-input  style="width:150px" placeholder="请输入客户分类" v-model="kehu.types"></el-input>
+                </el-form-item>
+              </el-col>
               <el-col :span="8">
                 <el-form-item label="客户性质：" prop="xingz">
                   <el-radio-group v-model="kehu.xingz">
@@ -335,6 +347,7 @@ export default {
         kfjl: '',
         xingz: '',
         hrid:"",
+        types:"",
       },
       defaultProps: {
         children: 'children',
@@ -375,6 +388,7 @@ export default {
           kfjl:"",
           xingz:"",
           hrid:"",
+          types:"",
         }
       },
 

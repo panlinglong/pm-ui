@@ -767,15 +767,7 @@
       showEmp(row){
         console.log(row.upname);
         console.log(this.user.name);
-        if(row.upname==this.user.name){
-          this.title='编辑房源信息';
-          this.emp=row;
-          this.dialogVisible=true;
-        }else if(this.user.name=="管理员"){
-          this.title='编辑房源信息';
-          this.emp=row;
-          this.dialogVisible=true;
-        }else if(this.user.name=="系统管理员"){
+        if(row.upname==this.user.name||this.user.name=="管理员"||this.user.name=="系统管理员"){
           this.title='编辑房源信息';
           this.emp=row;
           this.dialogVisible=true;

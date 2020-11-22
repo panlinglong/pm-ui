@@ -44,6 +44,15 @@
                 <el-form-item label="付款金额：">
                   <span>{{ props.row.price2 }}</span>
                 </el-form-item>
+                <el-form-item label="应收佣金：">
+                  <span>{{ props.row.price3 }}</span>
+                </el-form-item>
+                <el-form-item label="实收佣金：">
+                  <span>{{ props.row.price4 }}</span>
+                </el-form-item>
+                <el-form-item label="是否退佣：">
+                  <span>{{ props.row.tuiyong }}</span>
+                </el-form-item>
                 <el-form-item label="合同录入(文字)：">
                   <span>{{ props.row.details }}</span>
                 </el-form-item>
@@ -59,6 +68,10 @@
           <el-table-column
             label="坐落位置"
             prop="place">
+          </el-table-column>
+          <el-table-column
+            label="成交业务员"
+            prop="upname">
           </el-table-column>
           <el-table-column
             label="甲方"
@@ -98,6 +111,33 @@
 
         </el-table>
 
+        <el-dialog
+          :title="title"
+          :visible.sync="dialogUploadVisible"
+          width="70%"
+          @close='closeDialog'>
+          <el-upload
+            action="/employee/basic/img/"
+            accept="image/png, image/jpeg"
+            list-type="picture-card"
+            :file-list='this.imgSrcs'
+            :before-upload="beforeUploadPicture"
+            :on-preview="handlePictureCardPreview"
+            :on-progress="uploadProgress"
+            :on-success="uploadSuccess"
+            :on-change="uploadLimit"
+            :on-error="uploadError"
+            :before-remove="beforeRemove"
+            :on-remove="handleRemove"
+            :class="{disabled:uploadDisabled}"
+            :show-file-list="true">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogImageVisible">
+            <el-image :lazy="true"  width="100%" :src="dialogImageUrl" alt=""/>
+          </el-dialog>
+        </el-dialog>
+
       </div>
       <el-dialog
         :title="title"
@@ -121,6 +161,23 @@
               <el-col :span="8">
                 <el-form-item label="付款金额：" prop="price2">
                   <el-input  style="width:150px" placeholder="请输入付款金额" v-model="empdeal.price2"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="1">
+              <el-col :span="8">
+                <el-form-item label="应收佣金：" prop="price3">
+                  <el-input  style="width:150px" placeholder="请输入应收佣金" v-model="empdeal.price3"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="实收佣金：" prop="price4">
+                  <el-input  style="width:150px" placeholder="请输入实收佣金" v-model="empdeal.price4"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="是否退佣：" prop="tuiyong">
+                  <el-input  style="width:150px" placeholder="请输入" v-model="empdeal.tuiyong"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -174,9 +231,9 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="成交时间：" prop="begindate">
+                <el-form-item label="成交时间：" prop="beginDate">
                   <el-date-picker
-                    v-model="empdeal.begindate"
+                    v-model="empdeal.beginDate"
                     style="width: 200px"
                     type="date"
                     value-format="yyyy-MM-dd"
@@ -193,64 +250,6 @@
                 placeholder="请输入内容" v-model="empdeal.details"
               ></el-input>
             </el-row>
-         <!--   <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="所属部门：" prop="departmentid">
-                  <el-popover
-                    placement="right"
-                    title="请选择部门"
-                    width="200"
-                    trigger="manual"
-                    v-model="visible">
-                    <el-tree default-expand-all :data="allDeps" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-                    <div slot="reference" style="width: 200px;display: inline-flex;font-size: 13px;border: 1px solid #dedede;height: 35px;border-radius: 5px;
-                  cursor: pointer;align-items: center;padding-left: 8px" @click="showDepView">{{inputDepName}}</div>
-                  </el-popover>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职称：" prop="joblevelid">
-                  <el-select v-model="emp.joblevelid" placeholder="请选择">
-                    <el-option
-                      v-for="item in joblevels"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="职位：" prop="posid">
-                  <el-select v-model="emp.posid" placeholder="请选择">
-                    <el-option
-                      v-for="item in positions"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <el-form-item label="入职日期：" prop="begindate">
-                  <el-date-picker
-                    v-model="emp.begindate"
-                    style="width: 200px"
-                    type="date"
-                    value-format="yyyy-MM-dd"
-                    placeholder="选择日期">
-                  </el-date-picker>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="工号：" prop="workid">
-                  <el-input  style="width:150px" v-model="emp.workid" disabled></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>-->
           </el-form>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -289,6 +288,7 @@
         uploadDisabled:false,
         dialogImageUrl: [],
         dialogImageVisible:false,
+        dialogUploadVisible:false,
         title:'',
         inputDepName:'',
         allDeps:[],
@@ -296,6 +296,10 @@
         dialogVisible:false,
         empdeals:[{
         }],
+        imgpath:{
+          workid:"",
+          imagepath:"",
+        },
         keyword:'',
         total:0,
         page:1,
@@ -317,7 +321,11 @@
           workid:"",
           price1:"",
           price2:"",
+          price3:"",
+          price4:"",
+          upname:"",
           details:"",
+          tuiyong:"",
         },
         defaultProps: {
           children: 'children',
@@ -328,6 +336,9 @@
           jiafang:[{required:true,message:'请输入甲方',trigger:'blur'}],
           yifang:[{required:true,message:'请输入乙方',trigger:'blur'}],
           price1:[{required:true,message:'请输入成交金额',trigger:'blur'}],
+          price2:[{required:true,message:'请输入付款金额',trigger:'blur'}],
+          price3:[{required:true,message:'请输入应收佣金',trigger:'blur'}],
+          price4:[{required:true,message:'请输入实收佣金',trigger:'blur'}],
         }
 
       }
@@ -339,6 +350,89 @@
       // this.initData();
     },
     methods:{
+      getImg(row){
+        console.log(row);
+        this.rowa = row.workid;
+        this.upnames = row.upname;
+        this.getRequest("/employee/basic/getImg/?workid="+this.rowa).then(res=> {
+
+          console.log(res);
+          this.imgpaths = res.data;
+          console.log(this.imgpaths);
+          for(let i=0;i<this.imgpaths.length;i++){
+            const imgSrc = {
+              name:"",
+              url:"",
+            }
+            imgSrc.name = this.imgpaths[i].id;
+            imgSrc.url= "../../static"+this.imgpaths[i].imagepath;
+            this.imgSrcs.push(imgSrc);
+          }
+
+          console.log(this.imgSrcs);
+          this.dialogUploadVisible = true;
+        })
+
+
+      },
+      closeDialog(){
+        this.imgSrcs=[];
+        this.dialogUploadVisible=false;
+
+      },
+      handleRemove(file, fileList) {
+        if(this.user.name==this.upnames||this.user.roles[0].id==3||this.user.roles[0].id==6){
+          this.deleteRequest("/employee/basic/deleteImg/"+file.name)
+          console.log(file, fileList);
+        }else{
+          this.$confirm("非上传者无权删除图片，刷新后再次出现");
+        }
+
+      },
+      uploadSuccess(response, file, fileList) {
+        console.log(response);
+        console.log(this.rowa);
+        if(this.user.name==this.upnames||this.user.roles[0].id==3||this.user.roles[0].id==6){
+          this.imgpath.imagepath = response;
+          this.imgpath.workid = this.rowa;
+          this.postRequest("/employee/basic/addImg",this.imgpath)
+        }else{
+          this.$confirm("非上传者无权上传图片，刷新后恢复");
+        }
+      }
+      ,
+      uploadLimit(file,fileList){
+        console.log(this.upnames);
+        console.log(this.user.name);
+        if(this.upnames!=this.user.name){
+          this.uploadDisabled = true;
+        }
+      },
+      beforeRemove(file, fileList) {
+
+        return this.$confirm(`确定移除 ${ file.name }？`);
+
+      },
+
+      beforeUploadPicture(file) {
+        if(file.size > 10*1024*1024){
+          this.$message.error("上传图片不能大于10M");
+          return false;
+        }
+      },
+      // handleRemove(file, fileList) {
+      //   console.log(file, fileList);
+      // },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogImageVisible = true;
+      },
+      uploadProgress(event,file, fileList){
+
+      },
+      uploadError(err, file, fileList) {
+        this.$message.error("上传出错");
+      },
       emptyEmpdeal(){
         this.empdeal={
           place:"",
@@ -355,7 +449,11 @@
           workid:"",
           price1:"",
           price2:"",
+          price3:"",
+          price4:"",
+          upname:"",
           details:"",
+          tuiyong:"",
         }
       },
  doAddEmpdeal(){
@@ -371,6 +469,7 @@
         }else {
           this.$refs['empdealForm'].validate(valid=>{
             if (valid){
+              this.empdeal.upname=this.user.name;
               this.postRequest("/deal/basic/",this.empdeal).then(res=>{
                 this.dialogVisible = false;
                 this.initEmpdeals();
@@ -412,30 +511,40 @@
         this.dialogVisible=true;
       },
       deleteEmpdeal(row){
-        this.$confirm('此操作将永久删除【'+row.place+'】房源, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteRequest("/deal/basic/"+row.id).then(res=>{
-            if (res){
-              this.initEmpdeals();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+        console.log(this.user.name);
+        console.log(row.upname);
+        if (row.upname != this.user.name && this.user.name != "管理员" && this.user.name != "系统管理员") {
+          this.$confirm("非上传者无法删除");
+        } else {
+
+          this.$confirm('此操作将永久删除【' + row.place + '】房源, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.deleteRequest("/deal/basic/" + row.id).then(res => {
+              if (res) {
+                this.initEmpdeals();
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
-        });
-      },
-      showEmpdeal(row){
-        this.title='编辑房源信息';
-        if(this.$refs['empdealForm']!=undefined){
-          this.$refs['empdealForm'].resetFields()
         }
-        this.empdeal=row;
-        this.dialogVisible=true;
+      },
+      showEmpdeal(row) {
+        console.log(row.upname);
+        console.log(this.user.name);
+        if (row.upname == this.user.name || this.user.name == "管理员" || this.user.name == "系统管理员") {
+          this.title = '编辑房源信息';
+          this.empdeal = row;
+          this.dialogVisible = true;
+        } else {
+          this.$confirm("非上传者无法编辑");
+        }
       }
     }
   }
