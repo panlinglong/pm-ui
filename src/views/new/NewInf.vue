@@ -58,12 +58,6 @@
             label="面积"
             width="80">
           </el-table-column>
-          <el-table-column
-            fixed
-            prop="phone"
-            label="电话（长号）"
-            width="120">
-          </el-table-column>
 
           <el-table-column
             prop="remarks"
@@ -74,8 +68,14 @@
           <el-table-column
             fixed
             label="操作"
-            width="100">
+            width="200">
             <template slot-scope="scope">
+              <el-button
+                @click.native.prevent="getPhone1(scope.row)"
+                type="text"
+                size="small">
+                查看联系方式
+              </el-button>
               <el-button
                 @click.native.prevent="showNew(scope.row,scope.$index)"
                 type="text"
@@ -101,6 +101,15 @@
           </el-pagination>
         </div>
       </div>
+
+
+      <el-dialog
+        :title="title"
+        :visible.sync="dialogPhoneVisible"
+        width="30%">
+        <span>{{this.getPhone}}</span>
+      </el-dialog>
+
       <el-dialog
         :title="title"
         :visible.sync="dialogVisible"
@@ -190,6 +199,9 @@
     name: 'NewInf',
     data(){
       return{
+        getPhone:"",
+        dialogPhoneVisible:false,
+        user:JSON.parse(window.sessionStorage.getItem("user")),
         title:'',
         inputDepName:'',
         allDeps:[],
@@ -292,6 +304,14 @@
             this.total = res.total;
           }
         })
+      },
+      getPhone1(row){
+        if(this.user.roles[0].id=="6"||this.user.roles[0].id=="3"||this.user.roles[0].id=="1"){
+          this.getPhone = row.phone;
+          this.dialogPhoneVisible = true;
+        }else{
+          this.$confirm("无权查看");
+        }
       },
       showAddNewView(){
         this.title="添加报备"
