@@ -535,7 +535,7 @@
         if (row.upname != this.user.name && this.user.name != "管理员" && this.user.name != "系统管理员") {
           this.$confirm("非上传者无法删除");
         } else {
-          this.$confirm('此操作将永久删除【' + row.place + '】房源, 是否继续?', '提示', {
+          this.$confirm('此操作将永久删除【' + row.place + '】成交记录, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'

@@ -48,6 +48,8 @@ export const formatRoutes=(routes)=>{
           require(['../views/kehu/'+component+'.vue'],solve)
         }else if (component.startsWith("Deal")){
           require(['../views/deal/'+component+'.vue'],solve)
+        }else if (component.startsWith("Qiugou")){
+          require(['../views/qiugou/'+component+'.vue'],solve)
         }
       }
     }

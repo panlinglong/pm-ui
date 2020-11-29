@@ -247,34 +247,34 @@
       this.initNews();
       this.initData();
     },
-    methods:{
-      emptyNew(){
-        this.newinfo={
-          name1:"",
-          name2:"",
-          dates:"",
-          people1:"",
-          people2:"",
-          mianji:"",
-          phone:"",
-          workid:"",
-          remarks:"",
+    methods: {
+      emptyNew() {
+        this.newinfo = {
+          name1: "",
+          name2: "",
+          dates: "",
+          people1: "",
+          people2: "",
+          mianji: "",
+          phone: "",
+          workid: "",
+          remarks: "",
         }
       },
-      doAddNew(){
-        if (this.newinfo.id){
-          this.$refs['newForm'].validate(valid=>{
-            if (valid){
-              this.putRequest("/newinfo/basic/",this.newinfo).then(res=>{
+      doAddNew() {
+        if (this.newinfo.id) {
+          this.$refs['newForm'].validate(valid => {
+            if (valid) {
+              this.putRequest("/newinfo/basic/", this.newinfo).then(res => {
                 this.dialogVisible = false;
                 this.initNews();
               })
             }
           })
-        }else {
-          this.$refs['newForm'].validate(valid=>{
-            if (valid){
-              this.postRequest("/newinfo/basic/",this.newinfo).then(res=>{
+        } else {
+          this.$refs['newForm'].validate(valid => {
+            if (valid) {
+              this.postRequest("/newinfo/basic/", this.newinfo).then(res => {
                 this.dialogVisible = false;
                 this.initNews();
               })
@@ -282,70 +282,81 @@
           })
         }
       },
-      getMaxWorkID(){
-        this.getRequest("/newinfo/basic/maxWorkID").then(res=>{
-          if (res){
+      getMaxWorkID() {
+        this.getRequest("/newinfo/basic/maxWorkID").then(res => {
+          if (res) {
             this.newinfo.workid = res.object;
           }
         })
       },
-      currentChange(currentPage){
+      currentChange(currentPage) {
         this.page = currentPage;
         this.initNews();
       },
-      sizeChange(currentSize){
+      sizeChange(currentSize) {
         this.size = currentSize;
         this.initNews();
       },
-      initNews(){
-        this.getRequest("/newinfo/basic/?page="+this.page+"&size="+this.size+"&keyword="+this.keyword).then(res=>{
-          if (res){
+      initNews() {
+        this.getRequest("/newinfo/basic/?page=" + this.page + "&size=" + this.size + "&keyword=" + this.keyword).then(res => {
+          if (res) {
             this.news = res.data;
             this.total = res.total;
           }
         })
       },
-      getPhone1(row){
-        if(this.user.roles[0].id=="6"||this.user.roles[0].id=="3"||this.user.roles[0].id=="1"){
+      getPhone1(row) {
+        if (this.user.roles[0].id == "6" || this.user.roles[0].id == "3" || this.user.roles[0].id == "1") {
           this.getPhone = row.phone;
           this.dialogPhoneVisible = true;
-        }else{
+        } else {
           this.$confirm("无权查看");
         }
       },
-      showAddNewView(){
-        this.title="添加报备"
-        if(this.$refs['newForm']!=undefined){
+      showAddNewView() {
+        this.title = "添加报备"
+        if (this.$refs['newForm'] != undefined) {
           this.$refs['newForm'].resetFields()
         }
         this.emptyNew();
         this.getMaxWorkID();
-        this.dialogVisible=true;
+        this.dialogVisible = true;
       },
-      deleteNew(row){
-        this.$confirm('此操作将永久删除【'+row.name+'】报备, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.deleteRequest("/newinfo/basic/"+row.id).then(res=>{
-            if (res){
-              this.initNews();
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+      deleteNew(row) {
+        if (row.upname != this.user.name && this.user.name != "管理员" && this.user.name != "系统管理员") {
+          this.$confirm("非上传者无法删除");
+        } else {
+          this.$confirm('此操作将永久删除【' + row.name + '】报备, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.deleteRequest("/newinfo/basic/" + row.id).then(res => {
+              if (res) {
+                this.initNews();
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
           });
-        });
-      },
-      showNew(row){
-        this.title='编辑报备信息';
-        this.newinfo=row;
-        this.dialogVisible=true;
+        }
+        }
+      ,
+        showNew(row)
+        {
+          if (row.upname == this.user.name || this.user.name == "管理员" || this.user.name == "系统管理员") {
+          this.title = '编辑报备信息';
+          this.newinfo = row;
+          this.dialogVisible = true;
+          } else {
+            this.$confirm("非上传者无法编辑");
+          }
+        }
       }
-    }
+
   }
 </script>
 

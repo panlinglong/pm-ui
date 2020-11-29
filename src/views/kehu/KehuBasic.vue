@@ -220,6 +220,7 @@
               </el-col>
             </el-row>
               <el-row >
+                <span>客户跟进：</span>
                 <el-input
                   type="textarea"
                   :rows="2"

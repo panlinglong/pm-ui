@@ -2,7 +2,7 @@
 
     <div>
       <div>
-        <el-input placeholder="请输入房源名进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initNewhouses"></el-input>
+        <el-input placeholder="请输入楼盘名称进行搜索，可直接回车搜索..." prefix-icon="el-icon-search" style="width: 350px;" v-model="keyword" @keydown.enter.native="initNewhouses"></el-input>
         <el-button icon="el-icon-search" type="primary" @click="initNewhouses">搜索</el-button>
         <el-button icon="el-icon-plus" type="primary" @click="showAddNewhouseView">添加房源</el-button>
       </div>
